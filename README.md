@@ -27,22 +27,19 @@ Usage
 -----
 
 JSON.awk takes no input arguments on the command-line. Instead it reads a list of input filenames from stdin, one filename per line. An empty line marks the end of the list:
-
 ```sh
 echo -e "file1\nfile2\n" | awk -f JSON.awk
-```sh
+```
 
 Of course you can use redirection instead of piping:
-
 ```sh
-    echo -e "file1\nfile2\n" > list && awk -f JSON.awk < list
-```sh
+echo -e "file1\nfile2\n" > list && awk -f JSON.awk < list
+```
 
 To pass JSON from stdin you can use:
-
 ```sh
-    { echo -; echo; cat; } | awk -f JSON.awk
-```sh
+{ echo -; echo; cat; } | awk -f JSON.awk
+```
 
 Real-Life Examples
 ------------------
