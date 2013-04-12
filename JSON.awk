@@ -144,7 +144,7 @@ function parse_object(a1,   key,obj) { #{{{
 }
 #}}}
 
-function parse_value(a1,a2,   jpath,ret,x) { #{{{
+function parse_value(a1, a2,   jpath,ret,x) { #{{{
 	jpath=(a1!="" ? a1 "," : "") a2 # "${1:+$1,}$2"
 #scream("parse_value(" a1 "," a2 ") TOKEN=" TOKEN ", jpath=" jpath)
 	if (TOKEN == "{") {
@@ -187,8 +187,15 @@ function parse(   ret) { #{{{
 }
 #}}}
 
-function report(expected, got) { #{{{
-	scream("expected <" expected "> but got <" got "> at input token " ITOKENS)
+function report(expected, got,   i,from,to,context) { #{{{
+	from = ITOKENS - 10; if (from < 1) from = 1
+	to = ITOKENS + 10; if (to > NTOKENS) to = NTOKENS
+	for (i = from; i < ITOKENS; i++)
+		context = context sprintf("%s ", TOKENS[i])
+	context = context "<<" got ">> "
+	for (i = ITOKENS + 1; i <= to; i++)
+		context = context sprintf("%s ", TOKENS[i])
+	scream("expected <" expected "> but got <" got "> at input token " ITOKENS "\n" context, FILENAME)
 }
 #}}}
 
@@ -214,7 +221,7 @@ function scream(msg) { #{{{
 }
 #}}}
 
-function tokenize(a1,   pq,ESCAPE,CHAR,STRING,NUMBER,KEYWORD,SPACE) { #{{{
+function tokenize(a1,   pq,pb,ESCAPE,CHAR,STRING,NUMBER,KEYWORD,SPACE) { #{{{
 # usage A: {for(i=1; i<=tokenize($0); i++) print TOKENS[i]}
 # see also get_token()
 
@@ -226,10 +233,13 @@ function tokenize(a1,   pq,ESCAPE,CHAR,STRING,NUMBER,KEYWORD,SPACE) { #{{{
 	KEYWORD="null|false|true"
 	SPACE="[[:space:]]+"
 
-	pq="/p/r/e/s/e/r/v/e/q/u/o/t/e/" rand() # KLUDGE to preserve escaped quotes \" in strings
-	gsub(/\\"/, pq, a1) # w/o this some awk implementations incorrectly break STRING on \"
+	pq="/p/r/e/s/e/r/v/e/q/u/o/t/e/" rand() # KLUDGE to preserve escaped quotes in strings
+	pb="/p/r/e/s/e/r/v/e/b/a/c/k/s/" rand() # KLUDGE to preserve escaped backslashes in strings
+	gsub(/\\\\/, pb, a1)
+	gsub(/\\"/, pq, a1) # w/o this some awk implementations incorrectly break STRING on backslash-quote
         gsub(STRING "|" NUMBER "|" KEYWORD "|" SPACE "|.", "\n&", a1)
 	gsub(pq, "\\\"", a1) # KLUDGE ditto
+	gsub(pb, "\\\\", a1) # KLUDGE ditto
         gsub("\n" SPACE, "\n", a1)
 	sub(/^\n/, "", a1)
 	ITOKENS=0 # get_token() helper
