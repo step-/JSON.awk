@@ -1,7 +1,7 @@
 #!/bin/awk -f
 #
 # Software: JSON.awk - a practical JSON parser written in awk
-# Version: 1.0
+# Version: 1.10
 # Author: step- on github.com
 # License: This software is licensed under the MIT or the Apache 2 license.
 # Project home: https://github.com/step-/JSON.awk.git
@@ -195,7 +195,7 @@ function report(expected, got,   i,from,to,context) { #{{{
 	context = context "<<" got ">> "
 	for (i = ITOKENS + 1; i <= to; i++)
 		context = context sprintf("%s ", TOKENS[i])
-	scream("expected <" expected "> but got <" got "> at input token " ITOKENS "\n" context, FILENAME)
+	scream("expected <" expected "> but got <" got "> at input token " ITOKENS "\n" context)
 }
 #}}}
 
@@ -226,20 +226,16 @@ function tokenize(a1,   pq,pb,ESCAPE,CHAR,STRING,NUMBER,KEYWORD,SPACE) { #{{{
 # see also get_token()
 
 	# POSIX character classes (gawk) - contact me for non-[:class:] notation
-	ESCAPE="(\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})"
-	CHAR="[^[:cntrl:]\\\"]"
-	STRING="\"" CHAR "*(" ESCAPE CHAR "*)*\""
-	NUMBER="-?(0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]*)?"
-	KEYWORD="null|false|true"
+	# Replaced regex constant for string constant, see https://github.com/step-/JSON.awk/issues/1
+#	ESCAPE="(\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})"
+#	CHAR="[^[:cntrl:]\\\"]"
+#	STRING="\"" CHAR "*(" ESCAPE CHAR "*)*\""
+#	NUMBER="-?(0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]*)?"
+#	KEYWORD="null|false|true"
 	SPACE="[[:space:]]+"
 
-	pq="/p/r/e/s/e/r/v/e/q/u/o/t/e/" rand() # KLUDGE to preserve escaped quotes in strings
-	pb="/p/r/e/s/e/r/v/e/b/a/c/k/s/" rand() # KLUDGE to preserve escaped backslashes in strings
-	gsub(/\\\\/, pb, a1)
-	gsub(/\\"/, pq, a1) # w/o this some awk implementations incorrectly break STRING on backslash-quote
-        gsub(STRING "|" NUMBER "|" KEYWORD "|" SPACE "|.", "\n&", a1)
-	gsub(pq, "\\\"", a1) # KLUDGE ditto
-	gsub(pb, "\\\\", a1) # KLUDGE ditto
+#        gsub(STRING "|" NUMBER "|" KEYWORD "|" SPACE "|.", "\n&", a1)
+	gsub(/\"[^[:cntrl:]\"\\]*((\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})[^[:cntrl:]\"\\]*)*\"|-?(0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]*)?|null|false|true|[[:space:]]+|./, "\n&", a1)
         gsub("\n" SPACE, "\n", a1)
 	sub(/^\n/, "", a1)
 	ITOKENS=0 # get_token() helper

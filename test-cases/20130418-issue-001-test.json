@@ -1,0 +1,1 @@
+{"sh": "[ -r 'k.cfg' ] || echo \"# k.cfg - `date`\" >'k.cfg';s=$(awk \"`echo -n 'BEGIN{nf=1} /^@Bs*mode=/{sub(/=.*/,@Q=123@Q);nf=0} {print} END{if(nf) print @Qmode=123@Q}'|sed 's/@Q/\\x22/g;s/@B/\\x5C/g'`\" 'k.cfg') && [ 0 != ${#s} ] && echo -n \"$s\" >'k.cfg'"}
