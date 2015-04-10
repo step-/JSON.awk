@@ -1,7 +1,7 @@
 #!/bin/awk -f
 #
 # Software: JSON.awk - a practical JSON parser written in awk
-# Version: 1.10
+# Version: 1.11
 # Author: step- on github.com
 # License: This software is licensed under the MIT or the Apache 2 license.
 # Project home: https://github.com/step-/JSON.awk.git
@@ -154,10 +154,13 @@ function parse_value(a1, a2,   jpath,ret,x) { #{{{
 	} else if (TOKEN == "[") {
 		if (ret = parse_array(jpath)) {
 			return ret
-	}
-	} else if (TOKEN ~ /^(|[^0-9])$/) {
+		}
+	} else if (TOKEN == "") { #test case 20150410 #4
+		report("value", "EOF")
+		return 9
+	} else if (TOKEN ~ /^([^0-9])$/) {
 		# At this point, the only valid single-character tokens are digits.
-		report("value", TOKEN!="" ? TOKEN : "EOF")
+		report("value", TOKEN)
 		return 9
 	} else {
 		VALUE=TOKEN

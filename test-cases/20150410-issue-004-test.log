@@ -1,0 +1,6 @@
+# { echo 20150410-issue-004-test.json ; echo ; } | awk -f ../JSON.awk 
+20150410-issue-004-test.json: expected <value> but got <EOF> at input token 4
+{ "a" : <<EOF>> 
+invalid: 20150410-issue-004-test.json
+expected <value> but got <EOF> at input token 4
+{ "a" : <<EOF>> 
