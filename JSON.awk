@@ -5,7 +5,7 @@
 # program, the difference is just in the wall clock time.
 #
 # Software: JSON.awk - a practical JSON parser written in awk
-# Version: 1.11
+# Version: 1.11a
 # Author: step- on github.com
 # License: This software is licensed under the MIT or the Apache 2 license.
 # Project home: https://github.com/step-/JSON.awk.git
@@ -14,11 +14,16 @@
 #   https://github.com/dominictarr/JSON.sh
 #
 
+# See README.md for extended usage instructions.
+# Usage:
+#   printf "%s\n" Filepath [Filepath...] "" | awk [-v Option="value"] [-v Option="value"...] -f JSON.awk
+# Options: (default value in braces)
+#   BRIEF=0  don't print non-leaf nodes {1}
+#   STREAM=0  don't print to stdout, and store jpaths in JPATHS[] {1}
+
 BEGIN { #{{{
-	# option_BRIEF(1) - parse() omits printing non-leaf nodes
-	BRIEF=1;
-	# option_STREAM(0) - parse() omits stdout and stores jpaths in JPATHS[]
-	STREAM=1;
+  if (BRIEF == "") BRIEF=1 # parse() omits printing non-leaf nodes
+  if (STREAM == "") STREAM=1; # parse() omits stdout and stores jpaths in JPATHS[]
 	# for each input file:
 	#   TOKENS[], NTOKENS, ITOKENS - tokens after tokenize()
 	#   JPATHS[], NJPATHS - parsed data (when STREAM=0)
