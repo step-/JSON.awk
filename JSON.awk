@@ -1,4 +1,8 @@
-#!/bin/awk -f
+#!/usr/bin/awk -f
+# Note on she-bang: /usr/bin/awk is usually much faster than /bin/awk,
+# if you have both binaries installed in your system. Reason, the latter
+# is likely to be the under-powered busybox widget. You can use either
+# program, the difference is just in the wall clock time.
 #
 # Software: JSON.awk - a practical JSON parser written in awk
 # Version: 1.11
