@@ -1,8 +1,4 @@
 #!/usr/bin/awk -f
-# Note on she-bang: /usr/bin/awk is usually much faster than /bin/awk,
-# if you have both binaries installed in your system. Reason, the latter
-# is likely to be the under-powered busybox widget. You can use either
-# program, the difference is just in the wall clock time.
 #
 # Software: JSON.awk - a practical JSON parser written in awk
 # Version: 1.11a
@@ -22,8 +18,8 @@
 #   STREAM=0  don't print to stdout, and store jpaths in JPATHS[] {1}
 
 BEGIN { #{{{
-  if (BRIEF == "") BRIEF=1 # parse() omits printing non-leaf nodes
-  if (STREAM == "") STREAM=1; # parse() omits stdout and stores jpaths in JPATHS[]
+	if (BRIEF == "") BRIEF=1 # parse() omits printing non-leaf nodes
+	if (STREAM == "") STREAM=1; # parse() omits stdout and stores jpaths in JPATHS[]
 	# for each input file:
 	#   TOKENS[], NTOKENS, ITOKENS - tokens after tokenize()
 	#   JPATHS[], NJPATHS - parsed data (when STREAM=0)
@@ -31,13 +27,16 @@ BEGIN { #{{{
 	#   FAILS[] - maps names of invalid files to logged error lines
 	delete FAILS
 
-	# filepathnames from stdin
-	# usage: echo -e "file1\nfile2\n" | awk -f JSON.awk
-	# usage: { echo -; echo; cat; } | awk -f JSON.awk
-	while (getline ARGV[++ARGC] < "/dev/stdin") {
-		if (ARGV[ARGC] == "")
-			break
-	}
+	if (1 == ARGC) {
+		# file pathnames from stdin
+		# usage: echo -e "file1\nfile2\n" | awk -f JSON.awk
+		# usage: { echo; cat file1; } | awk -f JSON.awk
+		while (getline ARGV[++ARGC] < "/dev/stdin") {
+			if (ARGV[ARGC] == "")
+				break
+		}
+	} # else usage: awk -f JSON.awk file1 [file2...]
+
 	# set file slurping mode
 	srand(); RS="n/o/m/a/t/c/h" rand()
 }
