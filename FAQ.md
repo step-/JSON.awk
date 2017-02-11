@@ -1,6 +1,7 @@
 # Frequently Asked Questions
 
-## 1. Usage: how do I run JSON.awk?  <a name="1"></a>
+<a name="1"></a>
+## 1. Usage: how do I run JSON.awk?
 
 Before getting into command-line [options](#1-options) that modify the behavior of JSON.awk, let's review how to start just the script.
 
@@ -31,7 +32,8 @@ echo -e "1.json\n2.json\n" | awk -f JSON.awk
 
 JSON.awk will process the files named in the standard input stream.
 
-### Data from stdin (piping JSON data)  <a name="1-pipe"></a>
+<a name="1-pipe"></a>
+### Data from stdin (piping JSON data)
 
 You can pipe JSON data to JSON.awk with several notations.
 
@@ -79,7 +81,8 @@ which you can use to combine several JSON data files into a single unit:
 
 Combining JSON data is further discussed in [QA 4](#4).
 
-### [C] She-bang  <a name="1-C"></a>
+<a name="1-C"></a>
+### [C] She-bang
 
 If file JSON.awk has executable permission, and the she-bang line is valid
 [see QA 2](#2), you can start JSON.awk directly:
@@ -112,7 +115,8 @@ echo -e "file1\nfile2\n" | JSON.awk
 
 which is equivalent to method [B].
 
-### Options  <a name="1-options"></a>
+<a name="1-options"></a>
+### Options
 
 To specify options that modify the behavior of JSON.awk use awk option `-v`
 followed by the JSON.awk option name and value, like this (in method [C]
@@ -129,7 +133,8 @@ JSON.awk -v NAME=VALUE
   to stdout and stores jpaths in array `JPATHS[]`. This is useful if you need
   to embed JSON.awk is a larger awk program.
 
-## 2. Do I need to care about the she-bang?  <a name="2"></a>
+<a name="2"></a>
+## 2. Do I need to care about the she-bang?
 
 Only if you intend to run JSON.awk using method [C](#1-C) or with permanent
 [options](#1-options).
@@ -153,13 +158,15 @@ installed on your system.  Many Linux distributions link `/bin/awk` to
 `/usr/bin/mawk`.  Busybox awk is under-powered and takes much longer to run
 JSON.awk than gawk and mawk do on identical data.
 
-## 3. Is mawk 1.3.3 supported (Debian/Ubuntu)?  <a name="3"></a>
+<a name="3"></a>
+## 3. Is mawk 1.3.3 supported (Debian/Ubuntu)?
 
 JSON.awk is reported to work with mawk 1.3.4 20150503 and 20161120.
 Version 1.3.3 is [known not to work](http://github.com/step-/JSON.awk/issues/6).
 Please upgrade mawk to a newer version.
 
-## 4. How to parse multiple JSON data files as a single unit?  <a name="4"></a>
+<a name="4"></a>
+## 4. How to parse multiple JSON data files as a single unit?
 
 By default, JSON.awk parses each input file separately from all other input
 files.  Therefore, for each input file it resets its internal data structures,
