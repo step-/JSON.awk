@@ -218,6 +218,8 @@ function reset() { #{{{
 # 2) Move the call to apply() from the main loop to the END statement.
 # 3) In the main loop consider adding code that deletes partial JPATHS[]
 #    elements that would result from parsing invalid JSON files.
+# Compatibility Note:
+# 1) Very old gawk versions: replace 'delete JPATHS' with 'split("", JPATHS)'.
 
 	TOKEN=""; delete TOKENS; NTOKENS=ITOKENS=0
 	delete JPATHS; NJPATHS=0
