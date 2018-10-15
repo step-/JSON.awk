@@ -19,9 +19,16 @@ Features
 * Can parse one or multiple input files in a single invocation
 * Captures invalid JSON input and processes it on exit
 * Written for awk; does not require gawk extensions;
-  works with mawk 1.3.4 20150503 and higher
+  works with mawk 1.3.4 20150503 and higher [&raquo;6](https://github.com/step-/JSON.awk/issues/6);
 * Single file, does not depend on external programs
 * Your choice of MIT or Apache 2 license 
+
+Supported Platforms
+-------------------
+
+All OS platforms where a modern implementation of awk is available. Special cases:
+
+* FreeBSD [&raquo;10](https://github.com/step-/JSON.awk/issues/10)
 
 Setup
 -----
