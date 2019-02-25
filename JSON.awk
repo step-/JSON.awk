@@ -46,7 +46,7 @@ BEGIN { #{{{
 	reset() # See important application note in reset()
 
 	tokenize($0) # while(get_token()) {print TOKEN}
-	if (0 == parse()) {
+	if (0 == parse() && 1 == STREAM) {
 		apply(JPATHS, NJPATHS)
 	}
 }
