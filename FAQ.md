@@ -128,10 +128,10 @@ JSON.awk -v NAME=VALUE
 
 `NAME` and `VALUE` can be
 
-* `BRIEF=0` - default `BRIEF=1` - Does not print non-leaf nodes.
-* `STREAM=1` - default `STREAM=0` - Internal function `parse()` does not print
-  to stdout and stores jpaths in array `JPATHS[]`. This is useful if you need
-  to embed JSON.awk is a larger awk program.
+* `BRIEF=0` - default `BRIEF=1` - Does not print non-leaf nodes when BRIEF=1.
+* `STREAM=0` - default `STREAM=1` - Internal function `parse()` does not print
+  to stdout when STREAM=0 and stores jpaths in array `JPATHS[]`. This is useful
+  if you need to embed JSON.awk is a larger awk program.
 
 <a name="2"></a>
 ## 2. Do I need to care about the she-bang?

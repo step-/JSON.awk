@@ -14,8 +14,8 @@
 # Usage:
 #   printf "%s\n" Filepath [Filepath...] "" | awk [-v Option="value"] [-v Option="value"...] -f JSON.awk
 # Options: (default value in braces)
-#   BRIEF=0  don't print non-leaf nodes {1}
-#   STREAM=0  don't print to stdout, and store jpaths in JPATHS[] {1}
+#   BRIEF=0  don't print non-leaf nodes when BRIEF=1 {1}
+#   STREAM=0  don't print to stdout when STREAM=0, and store jpaths in JPATHS[] {1}
 
 BEGIN { #{{{
 	if (BRIEF == "") BRIEF=1 # parse() omits printing non-leaf nodes
