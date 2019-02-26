@@ -41,18 +41,21 @@ Usage Examples
 
 For full usage instructions and command-line options please read [FAQ 1](FAQ.md).
 
+Passing file names as command arguments:
+
 ```sh
-awk -f JSON.awk -v file1.json file2.json
+awk -f JSON.awk file1.json file2.json...
 
-echo -e "file1.json\nfile2.json\n" > filenames && awk -f JSON.awk < filenames
+awk -f JSON.awk - < file.json
 
-echo -e "file1.json\nfile2.json\n" | awk -f JSON.awk
+cat file.json | awk -f JSON.awk -
+```
 
-# pipe JSON data from stdin
+Passing file names on stdin:
+```sh
+echo -e "file1.json\nfile2.json" > filenames && awk -f JSON.awk < filenames
 
-cat file1.json file2.json | awk -f JSON.awk
-
-{ echo -; echo; cat file1.json file2.json; } | awk -f JSON.awk
+echo -e "file1.json\nfile2.json" | awk -f JSON.awk
 ```
 
 Projects that use JSON.awk

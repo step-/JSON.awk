@@ -3,83 +3,58 @@
 <a name="1"></a>
 ## 1. Usage: how do I run JSON.awk?
 
-Before getting into command-line [options](#1-options) that modify the behavior of JSON.awk, let's review how to start just the script.
-
-All the following methods work to start JSON.awk. Each method has its
-own merits.
+Any the following methods works to start JSON.awk. Each method has its own
+merits.
 
 ### [A] Command-line filenames (since release 1.12.0)
 
-Here you enter json filenames on the command-line, the traditional \*nix
-way.
+Here you enter json filenames on the command line, the traditional \*nix way.
 
 ```sh
 awk -f JSON.awk 1.json [2.json ...]
 ```
 
-In this method, JSON.awk doesn't support the `variable=value` _filename_
-syntax that awk provides.  Note: the `-v variable=value` _option_ syntax
-_is supported_.
+When method A is used, JSON.awk doesn't support the awk syntax `variable=value`
+for setting variables in the _filename_ list.  Note that the `-v
+variable=value` _option_ syntax _is supported_.
 
 ### [B] Filenames from stdin (since release 1.0.0)
 
-Here you specify a list of filenames on stdin, one filename per line,
-and append a blank line to mark the end of the list.
+Here you specify a list of filenames on stdin, one filename per line.
 
 ```sh
-echo -e "1.json\n2.json\n" | awk -f JSON.awk
+echo -e "1.json\n2.json" | awk -f JSON.awk
 ```
 
-JSON.awk will process the files named in the standard input stream.
+JSON.awk will process the files named in the standard input stream, each file
+separately.
 
 <a name="1-pipe"></a>
 ### Data from stdin (piping JSON data)
 
-You can pipe JSON data to JSON.awk with several notations.
+You can pipe JSON data to JSON.awk using several notations.
 
 ```sh
-cat 1.json | awk -f JSON.awk "-" 2.json [...]
+cat 1.json | awk -f JSON.awk "-" [2.json ...]
 ```
 
-This is an extension of method [A].  JSON.awk reads `stdin` first, which
-brings the contents of file `1.json`, then reads file 2.json and so
-on. Use "-" as the conventional name for stdin.
+This is an extension of method [A].  JSON.awk reads "-" (stdin) first, which
+brings in the contents of file `1.json` from the pipe, then reads the remaining
+files, if any, file 2.json and so on. Here "-" denotes stdin and can be used as
+its filename.
 
-Note that the following notation _isn't_ supported.
+Note that the following notation is invalid because it sends JSON
+data where a list of filenames is expected.
 
 ```sh
 cat 1.json | awk -f JSON.awk
 ```
 
-Re-write it into the equivalent, supported notation:
+This is the correct notation:
 
 ```sh
 cat 1.json | awk -f JSON.awk "-"
 ```
-
-This is an extension of method [B]:
-
-```sh
-{ echo -e "-\n"; cat 1.json; } | awk -f JSON.awk
-```
-
-Note that specifying file names from stdin requires for the input stream to be
-line-buffered.
-See this [open issue](https://github.com/step-/JSON.awk/issues/7).
-
-A useful short form of the above is:
-
-```sh
-{ echo; cat 1.json; } | awk -f JSON.awk
-```
-
-which you can use to combine several JSON data files into a single unit:
-
-```sh
-{ echo; cat 1-partial.json 2-partial.json; } | awk -f JSON.awk
-```
-
-Combining JSON data is further discussed in [QA 4](#4).
 
 <a name="1-C"></a>
 ### [C] She-bang
@@ -99,15 +74,15 @@ You can also pipe JSON data from stdin:
 cat 1.json | JSON.awk "-"
 ```
 
-Again, this is like method [A], and note that the following notation _isn't_
-supported:
+Again, this is like method [A]. Note that the following notation is
+invalid:
 
 ```sh
 cat 1.json | JSON.awk
 ```
 
-because JSON.awk is expecting a list of input files from stdin but gets JSON
-data instead. Of course, this notation is supported:
+because JSON.awk expects a list of input files from stdin but gets JSON
+data instead. This is the correct notation:
 
 ```sh
 echo -e "file1\nfile2\n" | JSON.awk
@@ -128,10 +103,16 @@ JSON.awk -v NAME=VALUE
 
 `NAME` and `VALUE` can be
 
-* `BRIEF=0` - default `BRIEF=1` - Does not print non-leaf nodes.
-* `STREAM=1` - default `STREAM=0` - Internal function `parse()` does not print
-  to stdout and stores jpaths in array `JPATHS[]`. This is useful if you need
-  to embed JSON.awk is a larger awk program.
+* `BRIEF`: `0` or `1` - default `BRIEF=1` - When 1 internal function `parse()`
+  will not print non-leaf nodes.
+* `STREAM`: `0` or `1` - default `STREAM=0` - When 0 internal function
+  `parse()` will not print to stdout and will store jpaths in array `JPATHS[]`
+  for stub function `apply()` to process. This can be useful if you need to embed
+  JSON.awk in a larger awk program. Your program would set `STREAM=0` and
+  _change_ stub function `apply()` to do something useful with the values stored
+  in array `JPATHS`. In its default stub form, function `apply()` simply prints
+  `JPATHS` elements to stdout. See also this
+  [discussion](https://github.com/step-/JSON.awk/pull/11).
 
 <a name="2"></a>
 ## 2. Do I need to care about the she-bang?
@@ -171,8 +152,8 @@ Please upgrade mawk to a newer version.
 By default, JSON.awk parses each input file separately from all other input
 files.  Therefore, for each input file it resets its internal data structures,
 and restarts from zero all ouput array indices.  If your application needs to
-parse all data files as a single unit, you have to options.
-Either modify function `reset()` in file JSON.awk, or pipe all data as a single
-unit, using the last notation shown at the end of [QA 1](#1) section on *Piping
-Data*.
+parse all data files as a single JSON object, you have two options:
+* Pipe all data as a single JSON object as illustrated by the last notation
+  shown at the end of [QA 1](#1) section *Piping Data*.
+* Modify function `reset()` in file JSON.awk. 
 

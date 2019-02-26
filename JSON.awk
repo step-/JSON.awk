@@ -1,7 +1,7 @@
 #!/usr/bin/awk -f
 #
 # Software: JSON.awk - a practical JSON parser written in awk
-# Version: 1.11a
+# Version: 1.12
 # Author: step- on github.com
 # License: This software is licensed under the MIT or the Apache 2 license.
 # Project home: https://github.com/step-/JSON.awk.git
@@ -12,14 +12,16 @@
 
 # See README.md for extended usage instructions.
 # Usage:
-#   printf "%s\n" Filepath [Filepath...] "" | awk [-v Option="value"] [-v Option="value"...] -f JSON.awk
+#   awk [-v Option="value"...] -f JSON.awk "-" -or- Filepath [Filepath...]
+#   printf "%s\n" Filepath [Filepath...] | awk [-v Option="value"...] -f JSON.awk
 # Options: (default value in braces)
-#   BRIEF=0  don't print non-leaf nodes {1}
-#   STREAM=0  don't print to stdout, and store jpaths in JPATHS[] {1}
+#    BRIEF=: 0 or 1  when 1 don't print non-leaf nodes {1}
+#   STREAM=: 0 or 1  when 0 store jpaths in JPATHS[] for stub function apply() {1}
+#      Setting STREAM=0 is intended for custom applications that rewrite function apply().
 
 BEGIN { #{{{
-	if (BRIEF == "") BRIEF=1 # parse() omits printing non-leaf nodes
-	if (STREAM == "") STREAM=1; # parse() omits stdout and stores jpaths in JPATHS[]
+	if (BRIEF == "")  BRIEF=1  # when 1 parse() omits printing non-leaf nodes
+	if (STREAM == "") STREAM=1 # when 0 parse() omits stdout and stores jpaths in JPATHS[]
 	# for each input file:
 	#   TOKENS[], NTOKENS, ITOKENS - tokens after tokenize()
 	#   JPATHS[], NJPATHS - parsed data (when STREAM=0)
@@ -60,8 +62,13 @@ END { # process invalid files {{{
 }
 #}}}
 
+# Function apply is a stub reserved for custom applications. It matters only
+# when STREAM=0. In its default form below apply() simply replicates JSON.sh's
+# output mode. JSON.sh prints in function parse() when STREAM=1 only. Default
+# stub function apply() prints below when STREAM=0 only because then (and only
+# then) size can be > 0.
 function apply (ary, size,   i) { # stub {{{
-	for (i=1; i<size; i++)
+	for (i=1; i <= size; i++)
 		print ary[i]
 }
 #}}}
