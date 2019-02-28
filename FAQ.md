@@ -105,7 +105,7 @@ JSON.awk -v NAME=VALUE
 
 * `BRIEF`: `0` or `1` - default `BRIEF=1` - When 1 internal function `parse()`
   will not print non-leaf nodes.
-* `STREAM`: `0` or `1` - default `STREAM=0` - When 0 internal function
+* `STREAM`: `0` or `1` - default `STREAM=1` - When 0 internal function
   `parse()` will not print to stdout and will store jpaths in array `JPATHS[]`
   for stub function `apply()` to process. This can be useful if you need to embed
   JSON.awk in a larger awk program. Your program would set `STREAM=0` and
