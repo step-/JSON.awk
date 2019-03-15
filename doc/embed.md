@@ -7,7 +7,7 @@ another awk program to process the jpaths directly.
 
 An awk program that embeds JSON.awk must satisfy two conditions:
 * Set global variable `STREAM=0` before JSON.awk runs its main loop.
-* Define callback functions `cb_jpaths` and `cb_fails`.
+* Define callback functions `cb_jpaths`, `cb_fails` and `cb_fail1`.
 
 When `STREAM=0` JSON.awk assumes that it is running embedded and modifies
 its behavior as follows:
@@ -19,9 +19,14 @@ its behavior as follows:
   `NJPATHS` is the array length. `JPATHS` will include non-leaf nodes when
   global variable `BRIEF=0`.
 
+* When it encounters an error, JSON.awk's main loop will call function
+  `cb_fail1(error_message)`, If `cb_fail1` returns a non-zero value then
+  JSON.awk will print the error message to stderr, which is the default way
+  to handle errors when JSON.awk isn't embedded.
+
 * JSON.awk's END action will call function `cb_fails(FAILS, NFAILS)`, where
   `FAILS` is an associative array of error messages, if any, that JSON.awk
-  prints to stderr while it parses JSON input, and `NFAILS` is the array length.
+  accumulates while it parses JSON input, and `NFAILS` is the array length.
 
 <a name="notes"></a>
 **Notes**

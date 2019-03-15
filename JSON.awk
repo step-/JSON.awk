@@ -229,11 +229,15 @@ function scream(msg) { #{{{
 	NFAILS += (FILENAME in FAILS ? 0 : 1)
 	FAILS[FILENAME] = FAILS[FILENAME] (FAILS[FILENAME]!="" ? "\n" : "") msg
 	if(0 == STREAM) {
-		# Call back the embedding program passing the error message
-		cb_fail1(msg)
+		# Call back the embedding program passing the error message,
+		# which will be printed to stderr if the callback returns non-zero.
+		if(cb_fail1(msg)) {
+			print FILENAME ": " msg >"/dev/stderr"
+		}
+	} else {
+		# Print error message when not not embedded.
+		print FILENAME ": " msg >"/dev/stderr"
 	}
-	msg = FILENAME ": " msg
-	print msg >"/dev/stderr"
 }
 #}}}
 
