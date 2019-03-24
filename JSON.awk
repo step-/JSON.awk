@@ -1,8 +1,8 @@
 #!/usr/bin/awk -f
 #
 # Software: JSON.awk - a practical JSON parser written in awk
-# Version: 1.12
-# Author: step- on github.com
+# Version: 1.2
+# Author: user step- on GitHub.com
 # License: This software is licensed under the MIT or the Apache 2 license.
 # Project home: https://github.com/step-/JSON.awk.git
 # Credits: This software includes major portions of JSON.sh, a pipeable JSON
@@ -16,8 +16,8 @@
 #   printf "%s\n" Filepath [Filepath...] | awk [-v Option="value"...] -f JSON.awk
 # Options: (default value in braces)
 #    BRIEF=: 0 or 1  when 1 don't print non-leaf nodes {1}
-#   STREAM=: 0 or 1  when 0 store jpaths in JPATHS[] for stub function apply() {1}
-#      Setting STREAM=0 is intended for custom applications that rewrite function apply().
+#   STREAM=: 0 or 1  when 0 don't output and call externally-defined callbacks.
+#      Setting STREAM=0 is intended for custom applications that embed JSON.awk.
 
 BEGIN { #{{{
 	if (BRIEF == "")  BRIEF=1  # when 1 parse() omits printing non-leaf nodes
@@ -48,28 +48,19 @@ BEGIN { #{{{
 	reset() # See important application note in reset()
 
 	tokenize($0) # while(get_token()) {print TOKEN}
-	if (0 == parse()) {
-		apply(JPATHS, NJPATHS)
+	if (0 == parse() && 0 == STREAM) {
+		# Call back the embedding program passing an array of jpaths.
+		cb_jpaths(JPATHS, NJPATHS)
 	}
 }
 #}}}
 
 END { # process invalid files {{{
-	for(name in FAILS) {
-		print "invalid: " name
-		print FAILS[name]
+	if (0 == STREAM) {
+		# Call back the embedding program passing an associative array
+		# of failed objects.
+		cb_fails(FAILS, NFAILS)
 	}
-}
-#}}}
-
-# Function apply is a stub reserved for custom applications. It matters only
-# when STREAM=0. In its default form below apply() simply replicates JSON.sh's
-# output mode. JSON.sh prints in function parse() when STREAM=1 only. Default
-# stub function apply() prints below when STREAM=0 only because then (and only
-# then) size can be > 0.
-function apply (ary, size,   i) { # stub {{{
-	for (i=1; i <= size; i++)
-		print ary[i]
 }
 #}}}
 
@@ -235,9 +226,18 @@ function reset() { #{{{
 #}}}
 
 function scream(msg) { #{{{
+	NFAILS += (FILENAME in FAILS ? 0 : 1)
 	FAILS[FILENAME] = FAILS[FILENAME] (FAILS[FILENAME]!="" ? "\n" : "") msg
-	msg = FILENAME ": " msg
-	print msg >"/dev/stderr"
+	if(0 == STREAM) {
+		# Call back the embedding program passing the error message,
+		# which will be printed to stderr if the callback returns non-zero.
+		if(cb_fail1(msg)) {
+			print FILENAME ": " msg >"/dev/stderr"
+		}
+	} else {
+		# Print error message when not not embedded.
+		print FILENAME ": " msg >"/dev/stderr"
+	}
 }
 #}}}
 
