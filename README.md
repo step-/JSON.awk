@@ -30,6 +30,7 @@ Supported Platforms
 All OS platforms where a POSIX awk implementation is available. Special cases:
 
 * FreeBSD [&raquo;10](https://github.com/step-/JSON.awk/issues/10)
+* mac OSX [&raquo;15](https://github.com/step-/JSON.awk/issues/15)
 
 Setup
 -----
@@ -40,7 +41,7 @@ Usage Examples
 --------------
 
 For full instructions please [read the docs](doc/usage.md).
-If you use mawk please read [FAQ 6](FAQ.md#6).
+If you use mawk please read [FAQ 6](doc/FAQ.md#6).
 
 Passing file names as command arguments:
 
@@ -58,7 +59,7 @@ Passing file names on stdin:
 echo -e "file1.json\nfile2.json" | awk -f JSON.awk
 ```
 
-Embedded in another awk program ([FAQ 5](FAQ.md#5)):
+Embedded in another awk program ([FAQ 5](doc/FAQ.md#5)):
 
 ```
 awk -f your-callbacks.awk -f JSON.awk file.json
