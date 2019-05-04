@@ -14,7 +14,8 @@
 **Mawk**
 
 * [Is mawk supported (Debian/Ubuntu)?](#3)
-* [How to fix error: mawk: JSON.awk: line NNN: function cb\_jpaths never defined?](#6)
+* [It doesn't work with mawk (large input file)](#6)
+* [How to fix error: mawk: JSON.awk: line NNN: function cb\_jpaths never defined?](#7)
 
 [top](#0)
 
@@ -100,7 +101,21 @@ Read [the docs](embed.md)
 [top](#0)
 
 <a name="6"></a>
-## 6. How to fix error: mawk: JSON.awk: line NNN: function apply never defined?
+## 6. It doesn't work with mawk (large input file)
+
+I do not recommend running JSON.awk with mawk on large input files (1+ MB)
+because mawk shows serious limitations on my Linux test system (mawk 1.3.4
+20171017, sprintf buffer size 8192). I noticed at least two issues:
+
+* Mawk complains that its internal sprintf buffer is too small.
+  Solution: `mawk -Wsprintf=<new size>...`.
+* Mawk seems stuck. It isn't. It just takes a _very_ long time to process some
+  regular expressions. When this happens, eventually mawk will silently drop
+  the ball, which then results in a parse error message.
+  Solution: use gawk (recommended) or busybox awk. They both can handle large
+  input files (tested with 3+ MB JSON text input).
+
+## 7. How to fix error: mawk: JSON.awk: line NNN: function apply never defined?
 
 Nothing's wrong with mawk nor JSON.awk.  This error message is just an
 unfortunate consequence of mawk's parser design. Run

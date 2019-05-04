@@ -21,8 +21,8 @@ Features
 * Can be embedded in other awk programs
 * Invalid JSON input is captured and can be processed on exit
 * Written for POSIX awk; does not require GNU gawk extensions;
-  works with mawk 1.3.4 20150503 and higher
-* Choice of MIT or Apache 2 license 
+  works with mawk 1.3.4 20150503 and higher (some limitations)
+* Choice of MIT or Apache 2 license
 
 Supported Platforms
 -------------------
@@ -35,13 +35,13 @@ All OS platforms where a POSIX awk implementation is available. Special cases:
 Setup
 -----
 
-Drop file JSON.awk in your project folder and follow the examples.
+Add files JSON.awk and callbacks.awk to your project and follow the examples.
 
 Usage Examples
 --------------
 
 For full instructions please [read the docs](doc/usage.md).
-If you use mawk please read [FAQ 6](doc/FAQ.md#6).
+If you use mawk please read FAQs [6](doc/FAQ.md#6) and [7](doc/FAQ.md#7).
 
 Passing file names as command arguments:
 
@@ -83,5 +83,7 @@ This software is available under the following licenses:
 Credits
 =======
 
-Without [JSON.sh](https://github.com/dominictarr/JSON.sh) this software
-would not exist.
+* [JSON.sh](https://github.com/dominictarr/JSON.sh)'s source code, retrieved on
+  2013-03-13, more than inspired version 1.0 of JSON.awk; without JSON.sh this
+  project would not exist.
+

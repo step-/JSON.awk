@@ -2,15 +2,12 @@
 #
 # Software: JSON.awk - a practical JSON parser written in awk
 # Version: 1.2
-# Author: user step- on GitHub.com
-# License: This software is licensed under the MIT or the Apache 2 license.
-# Project home: https://github.com/step-/JSON.awk.git
-# Credits: This software includes major portions of JSON.sh, a pipeable JSON
-#   parser written in Bash, retrieved on 20130313
-#   https://github.com/dominictarr/JSON.sh
-#
+# Copyright (c) 2013-2019, step
+# License: MIT or Apache 2
+# Project home: https://github.com/step-/JSON.awk
+# Credits:      https://github.com/step-/JSON.awk#credits
 
-# See README.md for extended usage instructions.
+# See README.md for full usage instructions.
 # Usage:
 #   awk [-v Option="value"...] -f JSON.awk "-" -or- Filepath [Filepath...]
 #   printf "%s\n" Filepath [Filepath...] | awk [-v Option="value"...] -f JSON.awk
