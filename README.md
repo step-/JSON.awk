@@ -18,7 +18,7 @@ Features
 * Single file without external dependencies
 * JSON.sh compatible output format (as of 2013-03-13)
 * Can parse one or multiple input files within a single invocation
-* Can be embedded in other awk programs
+* Callback interface (awk) to access parser and output events
 * Invalid JSON input is captured and can be processed on exit
 * Written for POSIX awk; does not require GNU gawk extensions;
   works with mawk 1.3.4 20150503 and higher (some limitations)
@@ -59,7 +59,7 @@ Passing file names on stdin:
 echo -e "file1.json\nfile2.json" | awk -f JSON.awk
 ```
 
-Embedded in another awk program ([FAQ 5](doc/FAQ.md#5)):
+Using callbacks to build a custom application ([FAQ 5](doc/FAQ.md#5)):
 
 ```
 awk -f your-callbacks.awk -f JSON.awk file.json

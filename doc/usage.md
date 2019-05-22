@@ -103,9 +103,8 @@ JSON.awk -v NAME=VALUE
 
 * `BRIEF`: `0` or `1` - default `BRIEF=1` - When 1 internal function `parse()`
   will not print non-leaf nodes.
-* `STREAM`: `0` or `1` - default `STREAM=1` - When 0 JSON.awk runs in
-  "embedded" mode: internal function `parse()` does not print to stdout;
-  JSON.awk calls externally-defined callback function - see [FAQ 5](#5).
+* `STREAM`: `0` or `1` - default `STREAM=1` - When 0 JSON.awk activates
+  callbacks to hook into parse events and print to stdout. See [FAQ 5](#5).
 
 [top](#0)
 

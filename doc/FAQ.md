@@ -7,15 +7,15 @@
 * [Do I need to care about the she-bang?](#2)
 * [How to parse multiple JSON data files as a single unit?](#4)
 
-**Embedding**
+**Applications**
 
-* [How to embed JSON.awk in a larger awk program?](#5)
+* [How to use JSON.awk in my application?](#5)
 
 **Mawk**
 
 * [Is mawk supported (Debian/Ubuntu)?](#3)
 * [It doesn't work with mawk (large input file)](#6)
-* [How to fix error: mawk: JSON.awk: line NNN: function cb\_jpaths never defined?](#7)
+* [How to fix error: mawk: JSON.awk: line NNN: function cb\_somename never defined?](#7)
 
 [top](#0)
 
@@ -88,7 +88,7 @@ parse all data files as a single JSON object, you have two options:
 [top](#0)
 
 <a name="5"></a>
-## 5. How to embed JSON.awk in another awk program?
+## 5. How to use JSON.awk in my application?
 
 TL;DR
 
@@ -96,7 +96,7 @@ TL;DR
 awk -v STREAM=0 -f my-callbacks.awk -f JSON.awk 1.json
 ```
 
-Read [the docs](embed.md)
+Read [the docs](callbacks.md)
 
 [top](#0)
 
@@ -115,7 +115,7 @@ because mawk shows serious limitations on my Linux test system (mawk 1.3.4
   Solution: use gawk (recommended) or busybox awk. They both can handle large
   input files (tested with 3+ MB JSON text input).
 
-## 7. How to fix error: mawk: JSON.awk: line NNN: function apply never defined?
+## 7. How to fix error: mawk: JSON.awk: line NNN: function cb_somename never defined?
 
 Nothing's wrong with mawk nor JSON.awk.  This error message is just an
 unfortunate consequence of mawk's parser design. Run
@@ -124,8 +124,8 @@ unfortunate consequence of mawk's parser design. Run
 mawk -f callbacks.awk -f JSON.awk 1.json
 ```
 
-to shut off the error message. Read note #2 of [the docs](embed.md) to know why
-this works.
+to shut off the error message. Read section _Mawk_ of [the docs](callbacks.md)
+to know why this works.
 
 [top](#0)
 
