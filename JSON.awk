@@ -16,9 +16,10 @@
 #   STREAM=: 0 or 1  when 0 don't output and call externally-defined callbacks.
 #      Setting STREAM=0 is intended for custom applications that embed JSON.awk.
 
-BEGIN { #{{{
-	if (BRIEF == "")  BRIEF=1  # when 1 parse() omits printing non-leaf nodes
+BEGIN { #{{{1
+	if (BRIEF  == "") BRIEF=1  # when 1 parse() omits printing non-leaf nodes
 	if (STREAM == "") STREAM=1 # when 0 parse() omits stdout and stores jpaths in JPATHS[]
+
 	# for each input file:
 	#   TOKENS[], NTOKENS, ITOKENS - tokens after tokenize()
 	#   JPATHS[], NJPATHS - parsed data (when STREAM=0)
@@ -39,9 +40,8 @@ BEGIN { #{{{
 	# set file slurping mode
 	srand(); RS="n/o/m/a/t/c/h" rand()
 }
-#}}}
 
-{ # main loop: process each file in turn {{{
+{ # main loop: process each file in turn {{{1
 	reset() # See important application note in reset()
 
 	tokenize($0) # while(get_token()) {print TOKEN}
@@ -50,18 +50,16 @@ BEGIN { #{{{
 		cb_jpaths(JPATHS, NJPATHS)
 	}
 }
-#}}}
 
-END { # process invalid files {{{
+END { # process invalid files {{{1
 	if (0 == STREAM) {
 		# Call back the embedding program passing an associative array
 		# of failed objects.
 		cb_fails(FAILS, NFAILS)
 	}
 }
-#}}}
 
-function get_token() { #{{{
+function get_token() { #{{{1
 # usage: {tokenize($0); while(get_token()) {print TOKEN}}
 
 	# return getline TOKEN # for external tokenizer
@@ -69,13 +67,12 @@ function get_token() { #{{{
 	TOKEN = TOKENS[++ITOKENS] # for internal tokenize()
 	return ITOKENS < NTOKENS
 }
-#}}}
 
-function parse_array(a1,   idx,ary,ret) { #{{{
+function parse_array(a1,   idx,ary,ret) { #{{{1
 	idx=0
 	ary=""
 	get_token()
-#scream("parse_array(" a1 ") TOKEN=" TOKEN)
+#	print "parse_array(" a1 ") TOKEN=" TOKEN >"/dev/stderr"
 	if (TOKEN != "]") {
 		while (1) {
 			if (ret = parse_value(a1, idx)) {
@@ -102,12 +99,11 @@ function parse_array(a1,   idx,ary,ret) { #{{{
 	}
 	return 0
 }
-#}}}
 
-function parse_object(a1,   key,obj) { #{{{
+function parse_object(a1,   key,obj) { #{{{1
 	obj=""
 	get_token()
-#scream("parse_object(" a1 ") TOKEN=" TOKEN)
+#	print "parse_object(" a1 ") TOKEN=" TOKEN >"/dev/stderr"
 	if (TOKEN != "}") {
 		while (1) {
 			if (TOKEN ~ /^".*"$/) {
@@ -145,11 +141,10 @@ function parse_object(a1,   key,obj) { #{{{
 	}
 	return 0
 }
-#}}}
 
-function parse_value(a1, a2,   jpath,ret,x) { #{{{
+function parse_value(a1, a2,   jpath,ret,x) { #{{{1
 	jpath=(a1!="" ? a1 "," : "") a2 # "${1:+$1,}$2"
-#scream("parse_value(" a1 "," a2 ") TOKEN=" TOKEN ", jpath=" jpath)
+#	print "parse_value(" a1 "," a2 ") TOKEN=" TOKEN " jpath=" jpath >"/dev/stderr"
 	if (TOKEN == "{") {
 		if (parse_object(jpath)) {
 			return 7
@@ -178,9 +173,8 @@ function parse_value(a1, a2,   jpath,ret,x) { #{{{
 	}
 	return 0
 }
-#}}}
 
-function parse(   ret) { #{{{
+function parse(   ret) { #{{{1
 	get_token()
 	if (ret = parse_value()) {
 		return ret
@@ -191,9 +185,8 @@ function parse(   ret) { #{{{
 	}
 	return 0
 }
-#}}}
 
-function report(expected, got,   i,from,to,context) { #{{{
+function report(expected, got,   i,from,to,context) { #{{{1
 	from = ITOKENS - 10; if (from < 1) from = 1
 	to = ITOKENS + 10; if (to > NTOKENS) to = NTOKENS
 	for (i = from; i < ITOKENS; i++)
@@ -203,9 +196,8 @@ function report(expected, got,   i,from,to,context) { #{{{
 		context = context sprintf("%s ", TOKENS[i])
 	scream("expected <" expected "> but got <" got "> at input token " ITOKENS "\n" context)
 }
-#}}}
 
-function reset() { #{{{
+function reset() { #{{{1
 # Application Note:
 # If you need to build JPATHS[] incrementally from multiple input files:
 # 1) Comment out below:        delete JPATHS; NJPATHS=0
@@ -220,9 +212,8 @@ function reset() { #{{{
 	delete JPATHS; NJPATHS=0
 	VALUE=""
 }
-#}}}
 
-function scream(msg) { #{{{
+function scream(msg) { #{{{1
 	NFAILS += (FILENAME in FAILS ? 0 : 1)
 	FAILS[FILENAME] = FAILS[FILENAME] (FAILS[FILENAME]!="" ? "\n" : "") msg
 	if(0 == STREAM) {
@@ -236,9 +227,8 @@ function scream(msg) { #{{{
 		print FILENAME ": " msg >"/dev/stderr"
 	}
 }
-#}}}
 
-function tokenize(a1,   pq,pb,ESCAPE,CHAR,STRING,NUMBER,KEYWORD,SPACE) { #{{{
+function tokenize(a1,   pq,pb,ESCAPE,CHAR,STRING,NUMBER,KEYWORD,SPACE) { #{{{1
 # usage A: {for(i=1; i<=tokenize($0); i++) print TOKENS[i]}
 # see also get_token()
 
@@ -253,11 +243,10 @@ function tokenize(a1,   pq,pb,ESCAPE,CHAR,STRING,NUMBER,KEYWORD,SPACE) { #{{{
 
 #        gsub(STRING "|" NUMBER "|" KEYWORD "|" SPACE "|.", "\n&", a1)
 	gsub(/\"[^[:cntrl:]\"\\]*((\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})[^[:cntrl:]\"\\]*)*\"|-?(0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]*)?|null|false|true|[[:space:]]+|./, "\n&", a1)
-        gsub("\n" SPACE, "\n", a1)
+	gsub("\n" SPACE, "\n", a1)
 	sub(/^\n/, "", a1)
 	ITOKENS=0 # get_token() helper
 	return NTOKENS = split(a1, TOKENS, /\n/)
 }
-#}}}
 
 # vim:fdm=marker:
