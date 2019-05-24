@@ -27,7 +27,7 @@ To use callbacks an application must:
 1. set global variable `STREAM=0` before JSON.awk runs its main loop
 2. define the callback functions.
 
-File [callbacks.awk](callbacks.awk) implements examples of all required
+File [callbacks.awk](../callbacks.awk) implements examples of all required
 callback functions that the application can reuse or redefine as needed.
 
 When `STREAM=0` JSON.awk will will modify its behavior as follows:

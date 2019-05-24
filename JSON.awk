@@ -12,12 +12,28 @@
 #   awk [-v Option="value"...] -f JSON.awk "-" -or- Filepath [Filepath...]
 #   printf "%s\n" Filepath [Filepath...] | awk [-v Option="value"...] -f JSON.awk
 # Options: (default value in braces)
-#    BRIEF=: 0 or 1  when 1 don't print non-leaf nodes {1}
-#   STREAM=: 0 or 1  when 0 callbacks hook into parser and print to stdout {1}
+#    BRIEF=: 0 or M {1}:
+#      non-zero excludes non-leaf nodes (array and object) from stdout; bit
+#      mask M selects which to include of ""(1), "[]"(2) and "{}"(4), or
+#      excludes ""(8) and wins over bit 1. BRIEF=0 includeѕ all.
+#   STREAM=: 0 or 1 {1}:
+#      zero hooks callbacks into parser and stdout printing.
 
 BEGIN { #{{{1
-	if (BRIEF  == "") BRIEF=1  # when 1 parse() omits printing non-leaf nodes
-	if (STREAM == "") STREAM=1 # when 0 parse() omits stdout and stores jpaths in JPATHS[]
+	if (BRIEF  == "") BRIEF=1  # when 1 parse() omits non-leaf nodes from stdout
+	if (STREAM == "") STREAM=1 # when 0 parse() stores JPATHS[] for callback cb_jpaths
+
+	# Set if empty string/array/object go to stdout and cb_jpaths when BRIEF>0
+	# defaults compatible with version up to 1.2
+	NO_EMPTY_STR = 0; NO_EMPTY_ARY = NO_EMPTY_OBJ = 1
+	#  leaf             non-leaf       non-leaf
+
+	if (BRIEF > 0) { # parse() will look at NO_EMPTY_*
+		NO_EMPTY_STR = !(x=bit_on(BRIEF, 0))
+		NO_EMPTY_ARY = !(x=bit_on(BRIEF, 1))
+		NO_EMPTY_OBJ = !(x=bit_on(BRIEF, 2))
+		if (x=bit_on(BRIEF, 3)) NO_EMPTY_STR = 1 # wins over bit 0
+	}
 
 	# for each input file:
 	#   TOKENS[], NTOKENS, ITOKENS - tokens after tokenize()
@@ -57,6 +73,12 @@ END { # process invalid files {{{1
 		# Pass the callback an associative array of failed objects.
 		cb_fails(FAILS, NFAILS)
 	}
+}
+
+function bit_on(n, b) { #{{{1
+# Return n & (1 << b) for b>0 n>=0 - for awk portability
+	if (b == 0) return n % 2
+	return int(n / 2^b) % 2
 }
 
 function append_jpath_component(jpath, component) { #{{{1
@@ -127,11 +149,11 @@ function parse_array(a1,   idx,ary,ret) { #{{{1
 			get_token()
 		}
 		CB_VALUE = sprintf("[%s]", ary)
+		# VALUE="" marks non-leaf jpath
+		VALUE = 0 == BRIEF ? CB_VALUE : ""
 	} else {
-		CB_VALUE = parse_array_empty(a1)
+		VALUE = CB_VALUE = parse_array_empty(a1)
 	}
-	# VALUE="" marks non-leaf jpath, which won't be output when BRIEF==1
-	VALUE = 1 != BRIEF ? CB_VALUE : ""
 	return 0
 }
 
@@ -188,11 +210,11 @@ function parse_object(a1,   key,obj) { #{{{1
 			get_token()
 		}
 		CB_VALUE = sprintf("{%s}", obj)
+		# VALUE="" marks non-leaf jpath
+		VALUE = 0 == BRIEF ? CB_VALUE : ""
 	} else {
-		CB_VALUE = parse_object_empty(a1)
+		VALUE = CB_VALUE = parse_object_empty(a1)
 	}
-	# VALUE="" marks non-leaf jpath, which won't be output when BRIEF==1
-	VALUE = 1 != BRIEF ? CB_VALUE : ""
 	return 0
 }
 
@@ -226,17 +248,24 @@ function parse_value(a1, a2,   jpath,ret,x) { #{{{1
 	}
 
 	# jpath=="" occurs on starting and ending the parsing session.
-	# VALUE=="" occurs when parse_array and parse_object mark a non-leaf jpath.
-	# Either condition is a reason to discard the parsed jpath if BRIEF==1.
-	if (! (1 == BRIEF && ("" == jpath || "" == VALUE))) {
-		x = append_jpath_value(jpath, VALUE)
-		if(0 == STREAM) {
-			# save jpath+value for cb_jpaths
-			JPATHS[++NJPATHS] = x
-		} else {
-			# consume jpath+value directly
-			print x
-		}
+	# VALUE=="" is set on parsing a non-empty array or a non-empty object.
+	# Either condition is a reason to discard the parsed jpath if BRIEF>0.
+	if (0 < BRIEF && ("" == jpath || "" == VALUE)) {
+		return 0
+	}
+
+	# BRIEF>1 is a bit mask that selects if an empty string/array/object is passed on
+	if (0 < BRIEF && (NO_EMPTY_STR && VALUE=="\"\"" || NO_EMPTY_ARY && VALUE=="[]" || NO_EMPTY_OBJ && VALUE=="{}")) {
+		return 0
+	}
+
+	x = append_jpath_value(jpath, VALUE)
+	if(0 == STREAM) {
+		# save jpath+value for cb_jpaths
+		JPATHS[++NJPATHS] = x
+	} else {
+		# consume jpath+value directly
+		print x
 	}
 	return 0
 }

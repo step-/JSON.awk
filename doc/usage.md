@@ -89,6 +89,7 @@ echo -e "file1\nfile2\n" | JSON.awk
 which is equivalent to method [B].
 
 <a name="options"></a>
+
 ### Options
 
 Options that enable specific features of JSON.awk are implemented as global
@@ -96,15 +97,42 @@ variables.  To set global variables when running JSON.awk use awk option `-v`
 followed by global variable name `=` value, like this (in method [C] notation):
 
 ```sh
-JSON.awk -v NAME=VALUE
+JSON.awk [-v NAME=VALUE...]
 ```
 
-`NAME` and `VALUE` can be
+**BRIEF**
 
-* `BRIEF`: `0` or `1` - default `BRIEF=1` - When 1 internal function `parse()`
-  will not print non-leaf nodes.
-* `STREAM`: `0` or `1` - default `STREAM=1` - When 0 JSON.awk activates
-  callbacks to hook into parse events and print to stdout. See [FAQ 5](#5).
+VALUE can be 0 or a positive integer M, default 1.  Non-zero excludes non-leaf
+elements, that is, arrays and objects, from stdout. Bit mask M selects which
+"empty" values should be included when printing to stdout or passing such
+elements to callback functions. It selectively censors the following "empty"
+JSON elements (VALUE in brackets): `""` (1), `[]` (2) and `{}` (4). For
+instance, to exclude arrays and objects but include empty arrays and empty
+objects, `[]` and `{}`, use `-v BRIEF=6`.&dagger;
+
+VALUE 8, which corresponds to bit 3, _excludes_ `""` and wins over bit 0 (VALUE
+1). So, if you want to exclude array and objects, whether empty or non-empty,
+and empty strings use `-v BRIEF=8`. VALUE 6 excludes empty strings. The default
+VALUE (1) corresponds to excluding non-leaf elements while including empty
+strings. This behavior is compatible with previous versions. VALUE 0 includes
+all arrays, objects and strings whether empty or non-empty. To further tailor
+output use callbacks.
+
+&dagger; Added in version 1.3 - previous versions never output empty arrays and
+empty objects at all.
+
+**STREAM**
+
+VALUE can be 0 or 1,  default 1. Zero activates callbacks to hook into parse
+events and print to stdout.
+
+### Callbacks
+
+```sh
+awk -f callbacks.sh -f JSON.awk file.json ...
+```
+
+[Read more](callbacks.md).
 
 [top](#0)
 

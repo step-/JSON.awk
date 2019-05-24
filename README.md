@@ -18,7 +18,7 @@ Features
 * Single file without external dependencies
 * JSON.sh compatible output format (as of 2013-03-13)
 * Can parse one or multiple input files within a single invocation
-* Callback interface (awk) to access parser and output events
+* Callback interface (awk) to hook into parser and output events
 * Invalid JSON input is captured and can be processed on exit
 * Written for POSIX awk; does not require GNU gawk extensions;
   works with mawk 1.3.4 20150503 and higher (some limitations)
