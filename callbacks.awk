@@ -80,15 +80,21 @@ function cb_append_jpath_value (jpath, value) {
 
 # cb_jpaths - process cb_append_jpath_value outputs
 # Called in JSON.awk's main loop when STREAM=0 only.
-# This example illustrates printing jpaths to stdout as JSON.awk does when STREAM=1
-# except that the initial input JSON text isn't printed if BRIEF=0.
+# This example illustrates printing jpaths to stdout as JSON.awk does when STREAM=1.
 # See also cb_parse_array_enter and cb_parse_object_enter.
 function cb_jpaths (ary, size,   i) {
 
-	# When BRIEF mode is off the last jpath value is the entire input JSON text
-	if (1 != BRIEF)   	# so we skip printing the last value
-		if(size > 1)	# unless the whole input text was a simple value
-			size -= 1
+	# When BRIEF mode is off by default JSON.awk prints the whole input JSON
+	# text as the last output line.  This code block shows how to avoid that.
+	if (0 == BRIEF) {
+		# Don't print the last line, which contains the whole input,
+		# unless it's a simple value or an empty array/object.
+		if (match(ary[size], /\t[[{][[:space:]]*[^]}]/)) {
+		       	if (index(ary[size], "\t") == RSTART) {
+				size -= 1
+			}
+		}
+	}
 
 	# Print ary - array of size jpaths and their values.
 	for(i=1; i <= size; i++) {
