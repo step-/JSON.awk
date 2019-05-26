@@ -16,10 +16,11 @@ Features
 --------
 
 * Single file without external dependencies
-* JSON.sh compatible output format (as of 2013-03-13)
 * Can parse one or multiple input files within a single invocation
-* Callback interface (awk) to hook into parser and output events
-* Invalid JSON input is captured and can be processed on exit
+* [Callback interface](doc/callbacks.md) (awk) to hook into parser and output events
+* [Library](doc/library.md) of practical callbacks (optional)
+* Capture invalid JSON input for further processing
+* JSON.sh compatible (as of 2013-03-13) default output format
 * Written for POSIX awk; does not require GNU gawk extensions;
   works with mawk 1.3.4 20150503 and higher (some limitations)
 * Choice of MIT or Apache 2 license
@@ -27,7 +28,7 @@ Features
 Supported Platforms
 -------------------
 
-All OS platforms where a POSIX awk implementation is available. Special cases:
+All OS platforms for which a POSIX awk implementation is available. Special cases:
 
 * FreeBSD [&raquo;10](https://github.com/step-/JSON.awk/issues/10)
 * mac OSX [&raquo;15](https://github.com/step-/JSON.awk/issues/15)
@@ -35,7 +36,8 @@ All OS platforms where a POSIX awk implementation is available. Special cases:
 Setup
 -----
 
-Add files JSON.awk and callbacks.awk to your project and follow the examples.
+Add files JSON.awk and optionally callbacks.awk to your project and follow the
+examples.
 
 Usage Examples
 --------------
@@ -86,4 +88,7 @@ Credits
 * [JSON.sh](https://github.com/dominictarr/JSON.sh)'s source code, retrieved on
   2013-03-13, more than inspired version 1.0 of JSON.awk; without JSON.sh this
   project would not exist.
+
+* [gron](https://github.com/tomnomnom/gron) for inspiration, and some test files,
+  for library module [js-dot-path.awk](doc/library.md#js_dot_path).
 

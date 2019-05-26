@@ -1,16 +1,15 @@
 <a name="0"></a>
 ## Building applications with JSON.awk
 
-At a simple level JSON.awk is used stand-alone to output so-called "jpaths"
-that describe an input JSON text. Then JSON.awk's output is piped through
-another filter, which will decompose it in some way to realize a given
-application.
+At a simple level JSON.awk can be used stand-alone to output so-called "jpaths"
+that describe an input JSON text. Then JSON.awk's output is piped through some
+text filter, which will arrange it in some way and realize an application.
 
-However, with JSON.awk it is also possible to quickly build some custom
-applications by defining and including a set of callback functions that allow
-hooking into parser and output events. This callback interface is generally
-enough to realize applications that transform JSON text into some other
-programming language or data format.
+However, with JSON.awk it is also possible to build applications by defining
+and including a set of callback functions that hook into parser and output
+events. With this callback interface writing applications that transform JSON
+text into some other programming language or data format can be more accurate
+and controlled but it requires writing bits of awk code.
 
 Finally, more complex awk applications can embed JSON.awk source code to access
 the parser and process jpaths directly.
@@ -19,18 +18,26 @@ This document describes the callback interface. Note that if you run JSON.awk
 as a stand-alone filter you don't need to define or include callbacks (unless
 your platform uses mawk, see below).
 
-<name a="callbacks">
+<name a="library"></a>
+## Library
+
+This repository includes a [library](doc/library.md) of awk callbacks that were
+developed to solve various practical problems, and are fully worked-out source
+code examples of how to use the callback interface.
+
+<name a="callbacks"></a>
 ## Callbacks
 
 To use callbacks an application must:
 
 1. set global variable `STREAM=0` before JSON.awk runs its main loop
+
 2. define the callback functions.
 
-File [callbacks.awk](../callbacks.awk) implements examples of all required
-callback functions that the application can reuse or redefine as needed.
+File [callbacks.awk](callbacks.awk) implements stubs of all required
+callback functions that your application can reuse or redefine as needed.
 
-When `STREAM=0` JSON.awk will will modify its behavior as follows:
+When `STREAM=0` JSON.awk will modify its behavior as follows:
 
 * It will call callbacks for each JSON array, object or simple value that
   it is parsing.

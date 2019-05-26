@@ -121,6 +121,23 @@ output use callbacks.
 &dagger; Added in version 1.3 - previous versions never output empty arrays and
 empty objects at all.
 
+The following table shows the output of the following command for `$i` in 0..8.
+
+```sh
+echo '["",{},[],10]' | awk -f JSON.awk -v BRIEF=$i
+```
+
+|    0   |    1   |    2   |    3   |    4   |    5   |    6   |    7   |    8   |
+|--------|--------|--------|--------|--------|--------|--------|--------|--------|
+| [0] "" | [0] "" |        | [0] "" |        | [0] "" |        | [0] "" |        |
+| [1] {} |        |        |        | [1] {} | [1] {} | [1] {} | [1] {} |        |
+| [2] [] |        | [2] [] | [2] [] |        |        | [2] [] | [2] [] |        |
+| [3] 10 | [3] 10 | [3] 10 | [3] 10 | [3] 10 | [3] 10 | [3] 10 | [3] 10 | [3] 10 |
+| _note_ |        |        |        |        |        |        |        |        |
+
+_note_: `BRIEF=0` also prints `[] ["",{},[],10]`
+
+
 **STREAM**
 
 VALUE can be 0 or 1,  default 1. Zero activates callbacks to hook into parse
@@ -132,7 +149,15 @@ events and print to stdout.
 awk -f callbacks.sh -f JSON.awk file.json ...
 ```
 
-[Read more](callbacks.md).
+[Read more](doc/callbacks.md).
+
+### Library
+
+```sh
+awk -f lib/<callback module>.awk -f JSON.awk -v STREAM=0 file.json ...
+```
+
+[Read more](doc/library.md).
 
 [top](#0)
 
