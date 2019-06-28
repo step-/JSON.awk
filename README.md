@@ -33,8 +33,8 @@ All OS platforms for which a POSIX awk implementation is available. Special case
 * FreeBSD [&raquo;10](https://github.com/step-/JSON.awk/issues/10)
 * mac OSX [&raquo;15](https://github.com/step-/JSON.awk/issues/15)
 
-Setup
------
+Installing
+----------
 
 Add files JSON.awk and optionally callbacks.awk to your project and follow the
 examples.
@@ -67,6 +67,13 @@ Using callbacks to build a custom application ([FAQ 5](doc/FAQ.md#5)):
 awk -f your-callbacks.awk -f JSON.awk file.json
 ```
 
+Applications
+------------
+
+* [Opera-bookmarks.awk](https://github.com/step-/opera-bookmarks.awk)
+  Extract (Chromium) Opera bookmarks and QuickDial thumbnails.
+  Convert bookmark data to SQLite database and CSV file.
+
 Projects known to use JSON.awk
 ------------------------------
 
@@ -89,6 +96,7 @@ Credits
   2013-03-13, more than inspired version 1.0 of JSON.awk; without JSON.sh this
   project would not exist.
 
-* [gron](https://github.com/tomnomnom/gron) for inspiration, and some test files,
-  for library module [js-dot-path.awk](doc/library.md#js_dot_path).
+* [gron](https://github.com/tomnomnom/gron) for inspiration leading to
+  library module [js-dot-path.awk](doc/library.md#js_dot_path), and for some
+  test files.
 
