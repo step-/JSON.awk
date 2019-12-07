@@ -1,7 +1,7 @@
 #!/usr/bin/awk -f
 #
 # Software: JSON.awk - a practical JSON parser written in awk
-# Version: 1.3
+# Version: 1.3.1
 # Copyright (c) 2013-2019, step
 # License: MIT or Apache 2
 # Project home: https://github.com/step-/JSON.awk
@@ -55,6 +55,10 @@ BEGIN { #{{{1
 
 	# set file slurping mode
 	srand(); RS="n/o/m/a/t/c/h" rand()
+}
+
+1 == NR && match($0, /^\xEF\xBB\xBF/) { # strip BOM mark {{{1
+	$0 = substr($0, RLENGTH + 1)
 }
 
 { # main loop: process each file in turn {{{1
