@@ -57,10 +57,6 @@ BEGIN { #{{{1
 	srand(); RS="n/o/m/a/t/c/h" rand()
 }
 
-1 == NR && match($0, /^\xEF\xBB\xBF/) { # strip BOM mark {{{1
-	$0 = substr($0, RLENGTH + 1)
-}
-
 { # main loop: process each file in turn {{{1
 	reset() # See important application note in reset()
 
@@ -331,17 +327,18 @@ function tokenize(a1,   pq,pb,ESCAPE,CHAR,STRING,NUMBER,KEYWORD,SPACE) { #{{{1
 
 	# POSIX character classes (gawk) - contact me for non-[:class:] notation
 	# Replaced regex constant for string constant, see https://github.com/step-/JSON.awk/issues/1
+#	BOM="(^\xEF\xBB\xBF)"
 #	ESCAPE="(\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})"
 #	CHAR="[^[:cntrl:]\\\"]"
 #	STRING="\"" CHAR "*(" ESCAPE CHAR "*)*\""
 #	NUMBER="-?(0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]*)?"
 #	KEYWORD="null|false|true"
 	SPACE="[[:space:]]+"
-
-#        gsub(STRING "|" NUMBER "|" KEYWORD "|" SPACE "|.", "\n&", a1)
-	gsub(/\"[^[:cntrl:]\"\\]*((\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})[^[:cntrl:]\"\\]*)*\"|-?(0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]*)?|null|false|true|[[:space:]]+|./, "\n&", a1)
+#	^BOM "|" STRING "|" NUMBER "|" KEYWORD "|" SPACE "|."
+	gsub(/(^\xEF\xBB\xBF)|\"[^[:cntrl:]\"\\]*((\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})[^[:cntrl:]\"\\]*)*\"|-?(0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]*)?|null|false|true|[[:space:]]+|./, "\n&", a1)
 	gsub("\n" SPACE, "\n", a1)
-	sub(/^\n/, "", a1)
+	# ^\n BOM?
+	sub(/^\n(\xEF\xBB\xBF\n)?/, "", a1)
 	ITOKENS=0 # get_token() helper
 	return NTOKENS = split(a1, TOKENS, /\n/)
 }
