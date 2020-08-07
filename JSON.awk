@@ -335,7 +335,7 @@ function tokenize(a1,   pq,pb,ESCAPE,CHAR,STRING,NUMBER,KEYWORD,SPACE) { #{{{1
 #	KEYWORD="null|false|true"
 	SPACE="[[:space:]]+"
 #	^BOM "|" STRING "|" NUMBER "|" KEYWORD "|" SPACE "|."
-	gsub(/(^\xEF\xBB\xBF)|\"[^[:cntrl:]\"\\]*((\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})[^[:cntrl:]\"\\]*)*\"|-?(0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]*)?|null|false|true|[[:space:]]+|./, "\n&", a1)
+	gsub(/(^\xEF\xBB\xBF)|\"[^\"\\[:cntrl:]]*((\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})[^\"\\[:cntrl:]]*)*\"|-?(0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]*)?|null|false|true|[[:space:]]+|./, "\n&", a1)
 	gsub("\n" SPACE, "\n", a1)
 	# ^\n BOM?
 	sub(/^\n(\xEF\xBB\xBF\n)?/, "", a1)
