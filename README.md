@@ -77,6 +77,9 @@ Applications
 Projects known to use JSON.awk
 ------------------------------
 
+* [Awk for JSON](https://github.com/mohd-akram/jawk) makes available JSON
+  nested objects as the awk array variable `_`, e.g. awk's `_["person","name"]`
+  evaluates to `Jason` for the JSON object `{"person":{"name":"Jason"}}`.
 * [KindleLauncher](https://bitbucket.org/ixtab/kindlelauncher/overview)
   a.k.a. KUAL, an application launcher for the Kindle e-ink models, uses
   JSON.awk to parse menu descriptions.
