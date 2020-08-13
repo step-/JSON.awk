@@ -1,8 +1,8 @@
 #!/usr/bin/awk -f
 #
 # Software: JSON.awk - a practical JSON parser written in awk
-# Version: 1.3.1
-# Copyright (c) 2013-2019, step
+# Version: 1.4
+# Copyright (c) 2013-2020, step
 # License: MIT or Apache 2
 # Project home: https://github.com/step-/JSON.awk
 # Credits:      https://github.com/step-/JSON.awk#credits

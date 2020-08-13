@@ -9,8 +9,8 @@ Introduction
 JSON.awk is a self-contained, single-file program with no external dependencies.
 It is similar to [JSON.sh](https://github.com/dominictarr/JSON.sh), a JSON
 parser written in Bash -- retrieved on 2013-03-13 to form the basis for
-JSON.awk. Since then, the two projects have taken separate paths, so you
-will not find all of JSON.sh features in JSON.awk, and viceversa.
+JSON.awk. Since then the projects have separated their development paths, each
+one adding new features that you will not find in the other.
 
 Features
 --------
@@ -30,8 +30,8 @@ Supported Platforms
 
 All OS platforms for which a POSIX awk implementation is available. Special cases:
 
-* FreeBSD [&raquo;10](https://github.com/step-/JSON.awk/issues/10)
-* mac OSX [&raquo;15](https://github.com/step-/JSON.awk/issues/15)
+* macOS and FreeBSD [&raquo;10](https://github.com/step-/JSON.awk/issues/10)
+* macOS [&raquo;15](https://github.com/step-/JSON.awk/issues/15)
 
 Installing
 ----------
