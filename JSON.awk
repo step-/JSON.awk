@@ -54,7 +54,7 @@ BEGIN { #{{{1
 	} # else usage: awk -f JSON.awk file1 [file2...]
 
 	# set file slurping mode
-	srand(); RS="n/o/m/a/t/c/h" rand()
+	srand(); RS="\x01n/o/m/a/t/c/h" rand()
 }
 
 { # main loop: process each file in turn {{{1
