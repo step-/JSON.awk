@@ -326,8 +326,9 @@ function tokenize(a1,   pq,pb,ESCAPE,CHAR,STRING,NUMBER,KEYWORD,SPACE) { #{{{1
 # usage A: {for(i=1; i<=tokenize($0); i++) print TOKENS[i]}
 # see also get_token()
 
-	# POSIX character classes (gawk) - contact me for non-[:class:] notation
-	# Replaced regex constant for string constant, see https://github.com/step-/JSON.awk/issues/1
+	# In POSIX character class notation but:
+	# - replaced regex constant for string constant, see https://github.com/step-/JSON.awk/issues/1
+	# - [:cntrl:] reduced to \001-\037, see https://github.com/step-/JSON.awk/issues/5
 #	BOM="(^\357\273\277)"
 #	ESCAPE="(\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})"
 #	CHAR="[^[:cntrl:]\\\"]"
@@ -336,7 +337,7 @@ function tokenize(a1,   pq,pb,ESCAPE,CHAR,STRING,NUMBER,KEYWORD,SPACE) { #{{{1
 #	KEYWORD="null|false|true"
 	SPACE="[[:space:]]+"
 #	^BOM "|" STRING "|" NUMBER "|" KEYWORD "|" SPACE "|."
-	gsub(/(^\357\273\277)|"[^"\\[:cntrl:]]*((\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})[^"\\[:cntrl:]]*)*"|-?(0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]*)?|null|false|true|[[:space:]]+|./, "\n&", a1)
+	gsub(/(^\357\273\277)|"[^"\\\001-\037]*((\\[^u\001-\037]|\\u[0-9a-fA-F]{4})[^"\\\001-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]*)?|null|false|true|[[:space:]]+|./, "\n&", a1)
 	gsub("\n" SPACE, "\n", a1)
 	# ^\n BOM?
 	sub(/^\n(\357\273\277\n)?/, "", a1)
