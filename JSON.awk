@@ -54,7 +54,7 @@ BEGIN { #{{{1
 	} # else usage: awk -f JSON.awk file1 [file2...]
 
 	# set file slurping mode
-	srand(); RS="\x01n/o/m/a/t/c/h" rand()
+	srand(); RS="\1n/o/m/a/t/c/h" rand()
 }
 
 { # main loop: process each file in turn {{{1
@@ -327,7 +327,7 @@ function tokenize(a1,   pq,pb,ESCAPE,CHAR,STRING,NUMBER,KEYWORD,SPACE) { #{{{1
 
 	# POSIX character classes (gawk) - contact me for non-[:class:] notation
 	# Replaced regex constant for string constant, see https://github.com/step-/JSON.awk/issues/1
-#	BOM="(^\xEF\xBB\xBF)"
+#	BOM="(^\357\273\277)"
 #	ESCAPE="(\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})"
 #	CHAR="[^[:cntrl:]\\\"]"
 #	STRING="\"" CHAR "*(" ESCAPE CHAR "*)*\""
@@ -335,10 +335,10 @@ function tokenize(a1,   pq,pb,ESCAPE,CHAR,STRING,NUMBER,KEYWORD,SPACE) { #{{{1
 #	KEYWORD="null|false|true"
 	SPACE="[[:space:]]+"
 #	^BOM "|" STRING "|" NUMBER "|" KEYWORD "|" SPACE "|."
-	gsub(/(^\xEF\xBB\xBF)|"[^"\\[:cntrl:]]*((\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})[^"\\[:cntrl:]]*)*"|-?(0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]*)?|null|false|true|[[:space:]]+|./, "\n&", a1)
+	gsub(/(^\357\273\277)|"[^"\\[:cntrl:]]*((\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})[^"\\[:cntrl:]]*)*"|-?(0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]*)?|null|false|true|[[:space:]]+|./, "\n&", a1)
 	gsub("\n" SPACE, "\n", a1)
 	# ^\n BOM?
-	sub(/^\n(\xEF\xBB\xBF\n)?/, "", a1)
+	sub(/^\n(\357\273\277\n)?/, "", a1)
 	ITOKENS=0 # get_token() helper
 	return NTOKENS = split(a1, TOKENS, /\n/)
 }
