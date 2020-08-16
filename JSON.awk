@@ -73,6 +73,7 @@ END { # process invalid files {{{1
 		# Pass the callback an associative array of failed objects.
 		cb_fails(FAILS, NFAILS)
 	}
+	exit(NFAILS > 0)
 }
 
 function bit_on(n, b) { #{{{1
