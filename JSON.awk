@@ -18,10 +18,14 @@
 #      excludes ""(8) and wins over bit 1. BRIEF=0 includeѕ all.
 #   STREAM=: 0 or 1 {1}:
 #      zero hooks callbacks into parser and stdout printing.
+#   STRICT=: 0,1,2 {0}:
+#      1 enforce RFC8259#7 character escapes except for solidus '/'
+#      2 enforce solidus escape too (for JSON embedded in HTML/XML)
 
 BEGIN { #{{{1
 	if (BRIEF  == "") BRIEF=1  # when 1 parse() omits non-leaf nodes from stdout
 	if (STREAM == "") STREAM=1 # when 0 parse() stores JPATHS[] for callback cb_jpaths
+	if (STRICT == "") STRICT=1 # when 1 parse() enforces valid character escapes (RFC8259 7)
 
 	# Set if empty string/array/object go to stdout and cb_jpaths when BRIEF>0
 	# defaults compatible with version up to 1.2
@@ -219,7 +223,7 @@ function parse_object(a1,   key,obj) { #{{{1
 	return 0
 }
 
-function parse_value(a1, a2,   jpath,ret,x) { #{{{1
+function parse_value(a1, a2,   jpath,ret,x,reason) { #{{{1
 	jpath = append_jpath_component(a1, a2)
 #	print "parse_value(" a1 "," a2 ") TOKEN=" TOKEN " jpath=" jpath >"/dev/stderr"
 
@@ -240,10 +244,13 @@ function parse_value(a1, a2,   jpath,ret,x) { #{{{1
 	} else if (TOKEN == "") { #test case 20150410 #4
 		report("value", "EOF")
 		return 8
-	} else if (is_value(TOKEN)) {
+	} else if ((x = is_value(TOKEN)) >0) {
 		CB_VALUE = VALUE = TOKEN
 	} else {
-		report("value", TOKEN)
+		if (-1 == x || -2 == x) {
+			reason = "missing or invalid character escape"
+		}
+		report("value", TOKEN, reason)
 		return 9
 	}
 
@@ -278,12 +285,12 @@ function parse(   ret) { #{{{1
 	if (get_token() || "" != TOKEN) {
 		report("EOF", TOKEN)
 		return 10
-		# TODO the next JSON stream object would start here.
+		# TODO the next JSON text starts here.
 	}
 	return 0
 }
 
-function report(expected, got,   i,from,to,context) { #{{{1
+function report(expected, got, extra,   i,from,to,context) { #{{{1
 	from = ITOKENS - 10; if (from < 1) from = 1
 	to = ITOKENS + 10; if (to > NTOKENS) to = NTOKENS
 	for (i = from; i < ITOKENS; i++)
@@ -291,7 +298,7 @@ function report(expected, got,   i,from,to,context) { #{{{1
 	context = context "<<" got ">> "
 	for (i = ITOKENS + 1; i <= to; i++)
 		context = context sprintf("%s ", TOKENS[i])
-	scream("expected <" expected "> but got <" got "> (length " length(got) ") at input token " ITOKENS "\n" context)
+	scream("expected <" expected "> but got <" got "> (length " length(got) (extra ? ", "extra :"") ") at input token " ITOKENS "\n" context)
 }
 
 function reset() { #{{{1
@@ -347,8 +354,50 @@ function tokenize(a1) { #{{{1
 }
 
 function is_value(a1) { #{{{1
+	# Return 0(malformed <value>) <0(<value> but !strict content) >0(pass)
+
 	# STRING | NUMBER | KEYWORD
-	return a1 ~ /^("[^"\\\000-\037]*((\\[^u\000-\037]|\\u[0-9a-fA-F]{4})[^"\\\000-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true)$/
+	if(!STRICT)
+		return a1 ~ /^("[^"\\\000-\037]*((\\[^u\000-\037]|\\u[0-9a-fA-F]{4})[^"\\\000-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true)$/
+
+	# STRICT is on
+	# unescaped = %x20-21 / %x23-5B / %x5D-10FFFF
+	# Characters in a STRING are restricted as follows (RFC8259):
+	# All Unicode characters may be placed within the quotation marks, except for the characters that MUST be escaped:
+	# quotation mark, reverse solidus, and the control characters (U+0000 through U+001F).
+	# Any character may be escaped with \uXXXX, alternatively, with the following two-character escapes:
+	# %x75 4HEXDIG    ; uXXXX                U+XXXX
+	# %x22 /          ; "    quotation mark  U+0022
+	# %x5C /          ; \    reverse solidus U+005C
+	# %x62 /          ; b    backspace       U+0008
+	# %x66 /          ; f    form feed       U+000C
+	# %x6E /          ; n    line feed       U+000A   removed by tokenizer
+	# %x72 /          ; r    carriage return U+000D   removed by tokenizer
+	# %x2F /          ; /    solidus         U+002F   enforced only when STRICT >1
+	# %x74 /          ; t    tab             U+0009   removed by tokenizer
+
+	# NUMBER | KEYWORD
+	if (1 != index(a1, "\"")) {
+		return a1 ~ /^(-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true)$/
+	}
+	# invalid STRING
+	if (a1 !~ /^("[^"\\\000-\037]*((\\[^u\000-\037]|\\u[0-9a-fA-F]{4})[^"\\\000-\037]*)*")$/) {
+		return 0
+	}
+	a1 = substr(a1, 2, length(a1) -2)
+
+	# STRICT 1: allowed character escapes
+	gsub(/\\["\\/bfnrt]|\\u[0-9a-fA-F]{4}/, "", a1)
+	# STRICT 1: unescaped quotation-mark, reverse solidus and control characters
+	if (a1 ~ /["\\\000-\037]/) {
+		return -1
+	}
+	# STRICT 2: unescaped solidus
+	if (STRICT > 1 && index(a1, "/")) {
+		return -2
+	}
+	# PASS STRICT STRING
+	return 1
 }
 
 # vim:fdm=marker:
