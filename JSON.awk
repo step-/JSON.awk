@@ -328,7 +328,7 @@ function tokenize(a1) { #{{{1
 
 # In POSIX character class notation but:
 # - replaced regex constant for string constant, see https://github.com/step-/JSON.awk/issues/1
-# - [:cntrl:] reduced to [\001-\037], see https://github.com/step-/JSON.awk/issues/5
+# - [:cntrl:] reduced to [\000-\037], see https://github.com/step-/JSON.awk/issues/5
 # - [:space:] reduced to [ \t\n\r], see https://tools.ietf.org/html/rfc8259#page-5 ws
 #	BOM="(^\357\273\277)"
 #	ESCAPE="(\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})"
@@ -338,7 +338,7 @@ function tokenize(a1) { #{{{1
 #	KEYWORD="null|false|true"
 #	SPACE="[[:space:]]+"
 #	^BOM "|" STRING "|" NUMBER "|" KEYWORD "|" SPACE "|."
-	gsub(/(^\357\273\277)|"[^"\\\000-\037]*((\\[^u\001-\037]|\\u[0-9a-fA-F]{4})[^"\\\001-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true|[ \t\n\r]+|./, "\n&", a1)
+	gsub(/(^\357\273\277)|"[^"\\\000-\037]*((\\[^u\000-\037]|\\u[0-9a-fA-F]{4})[^"\\\000-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true|[ \t\n\r]+|./, "\n&", a1)
 	gsub("\n" "[ \t\n\r]+", "\n", a1)
 	# ^\n BOM?
 	sub(/^\n(\357\273\277\n)?/, "", a1)
@@ -348,7 +348,7 @@ function tokenize(a1) { #{{{1
 
 function is_value(a1) { #{{{1
 	# STRING | NUMBER | KEYWORD
-	return a1 ~ /^("[^"\\\000-\037]*((\\[^u\001-\037]|\\u[0-9a-fA-F]{4})[^"\\\001-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true)$/
+	return a1 ~ /^("[^"\\\000-\037]*((\\[^u\000-\037]|\\u[0-9a-fA-F]{4})[^"\\\000-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true)$/
 }
 
 # vim:fdm=marker:
