@@ -104,7 +104,7 @@ function get_token() { #{{{1
 	# return getline TOKEN # for external tokenizer
 
 	TOKEN = TOKENS[++ITOKENS] # for internal tokenize()
-	return ITOKENS < NTOKENS
+	return ITOKENS < NTOKENS  # 1 if more tokens to come
 }
 
 function parse_array_empty(jpath) { #{{{1
@@ -275,9 +275,10 @@ function parse(   ret) { #{{{1
 	if (ret = parse_value()) {
 		return ret
 	}
-	if (get_token()) {
+	if (get_token() || "" != TOKEN) {
 		report("EOF", TOKEN)
-		return 11
+		return 10
+		# TODO the next JSON stream object would start here.
 	}
 	return 0
 }
