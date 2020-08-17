@@ -239,13 +239,12 @@ function parse_value(a1, a2,   jpath,ret,x) { #{{{1
 		parse_array_exit(jpath, 0)
 	} else if (TOKEN == "") { #test case 20150410 #4
 		report("value", "EOF")
-		return 9
-	} else if (TOKEN ~ /^([^0-9])$/) {
-		# At this point, the only valid single-character tokens are digits.
+		return 8
+	} else if (is_value(TOKEN)) {
+		CB_VALUE = VALUE = TOKEN
+	} else {
 		report("value", TOKEN)
 		return 9
-	} else {
-		CB_VALUE = VALUE = TOKEN
 	}
 
 	# jpath=="" occurs on starting and ending the parsing session.
@@ -291,7 +290,7 @@ function report(expected, got,   i,from,to,context) { #{{{1
 	context = context "<<" got ">> "
 	for (i = ITOKENS + 1; i <= to; i++)
 		context = context sprintf("%s ", TOKENS[i])
-	scream("expected <" expected "> but got <" got "> at input token " ITOKENS "\n" context)
+	scream("expected <" expected "> but got <" got "> (length " length(got) ") at input token " ITOKENS "\n" context)
 }
 
 function reset() { #{{{1
@@ -344,6 +343,11 @@ function tokenize(a1) { #{{{1
 	sub(/^\n(\357\273\277\n)?/, "", a1)
 	ITOKENS=0 # get_token() helper
 	return NTOKENS = split(a1, TOKENS, /\n/)
+}
+
+function is_value(a1) { #{{{1
+	# STRING | NUMBER | KEYWORD
+	return a1 ~ /^("[^"\\\000-\037]*((\\[^u\001-\037]|\\u[0-9a-fA-F]{4})[^"\\\001-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]*)?([eE][+-]?[0-9]*)?|null|false|true)$/
 }
 
 # vim:fdm=marker:
