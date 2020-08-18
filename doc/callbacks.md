@@ -22,7 +22,7 @@ your platform uses mawk, see below).
 ## Library
 
 This repository includes a
-[library](https://github.com/step-/JSON.awk/blob/master/doc/library.md)
+[library](library.md)
 of awk callbacks that were
 developed to solve various practical problems, and are fully worked-out source
 code examples of how to use the callback interface.
@@ -36,7 +36,7 @@ To use callbacks an application must:
 
 2. define the callback functions.
 
-File [callbacks.awk](https://github.com/step-/JSON.awk/blob/master/callbacks.awk)
+File [callbacks.awk](callbacks.awk)
 implements stubs of all required
 callback functions that your application can reuse or redefine as needed.
 

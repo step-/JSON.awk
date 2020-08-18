@@ -16,14 +16,28 @@ Features
 --------
 
 * Single file without external dependencies
-* Can parse one or multiple input files within a single invocation
+* Can parse multiple input files within a single invocation (one JSON text per file)
 * [Callback interface](doc/callbacks.md) (awk) to hook into parser and output events
 * [Library](doc/library.md) of practical callbacks (optional)
 * Capture invalid JSON input for further processing
-* JSON.sh compatible (as of 2013-03-13) default output format
-* Written for POSIX awk; does not require GNU gawk extensions;
-  works with mawk 1.3.4 20150503 and higher (some limitations)
 * Choice of MIT or Apache 2 license
+* JSON.sh compatible (as of 2013-03-13) default output format
+
+Non-features
+------------
+
+* Transforming input values, e.g., string/number normalization
+
+Compatibility with Awk Implementations
+--------------------------------------
+
+Of the many awk [implementations](https://en.wikipedia.org/wiki/AWK#Versions_and_implementations)
+around, JSON.awk works better with the POSIX ones and with GNU awk.
+JSON.awk is routinely tested on Linux with gawk, busybox awk and mawk in this order.
+I recommend gawk. JSON.awk does not require GNU gawk extensions, and the differences
+of running gawk with or without the `--posix` option enabled are minimal, if any.
+Running with busybox awk requires a simple patch [FAQ](doc/FAQ.md#busybox_awk).
+Running with mawk requires mawk version 1.3.4 20150503 or higher [FAQ](doc/FAQ.md#mawk).
 
 Supported Platforms
 -------------------
@@ -32,6 +46,15 @@ All OS platforms for which a POSIX awk implementation is available. Special case
 
 * macOS and FreeBSD [&raquo;10](https://github.com/step-/JSON.awk/issues/10)
 * macOS [&raquo;15](https://github.com/step-/JSON.awk/issues/15)
+
+Conformance
+-----------
+
+There is no official conformance test for the JSON language. Thankfully, some
+unofficial test suites exist.  JSON.awk is tested against the
+[JSONTestSuite](https://github.com/nst/JSONTestSuite.git).
+
+[Test results and comparisons](doc/JSONTestSuite/results/full_results.md)
 
 Installing
 ----------
@@ -43,7 +66,8 @@ Usage Examples
 --------------
 
 For full instructions please [read the docs](doc/usage.md).
-If you use mawk please read FAQs [6](doc/FAQ.md#6) and [7](doc/FAQ.md#7).
+Mawk users please read the [FAQ](doc/FAQ.md#mawk).
+Busybox awk users also please read the [FAQ](doc/FAQ.md#busybox_awk).
 
 Passing file names as command arguments:
 
@@ -102,4 +126,6 @@ Credits
 * [gron](https://github.com/tomnomnom/gron) for inspiration leading to
   library module [js-dot-path.awk](doc/library.md#js_dot_path), and for some
   test files.
+
+* [JSONTestSuite](https://github.com/nst/JSONTestSuite)
 

@@ -140,8 +140,35 @@ _note_: `BRIEF=0` also prints `[] ["",{},[],10]`
 
 **STREAM**
 
-VALUE can be 0 or 1,  default 1. Zero activates callbacks to hook into parse
+VALUE can be 0 or 1, default 1. Zero activates callbacks to hook into parse
 events and print to stdout.
+
+**STRICT**
+
+VALUE can be 0, 1 or 2, default 1.  Zero disables strict enforcement of string
+character escapes as defined in RFC8259 section 7. Other values enable strict
+escapes.  The only difference between 1 and 2 is the solidus (forward slash)
+character, which according to the specification may be escaped with a
+backslash, i.e. `\/`.  When VALUE is 2, solidus must be escaped.  Note that the
+default VALUE makes the parser reject all character escapes except `\"`, `\\`,
+`\b`, `\f`, `\n`, `\r`, `\/`, `\t`, and the `\uXXXX` escape covering all
+Unicode codepoints.
+
+### Streaming JSON texts
+
+JSON.awk support a single JSON text per input file.  If you need to process
+a stream of JSON texts put each one into its own file.  Here is a contrived
+example to make the point:
+
+```bash
+bash-4.4# JSON.awk -v BRIEF=0 <(echo '[1]') <(echo '[2]')
+```
+```
+[0]     1
+[]      [1]
+[0]     2
+[]      [2]
+```
 
 ### Callbacks
 

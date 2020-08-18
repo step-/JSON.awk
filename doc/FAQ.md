@@ -11,11 +11,17 @@
 
 * [How to use JSON.awk in my application?](#5)
 
+<a name="mawk"></a>
 **Mawk**
 
 * [Is mawk supported (Debian/Ubuntu)?](#3)
 * [It doesn't work with mawk (large input file)](#6)
 * [How to fix error: mawk: JSON.awk: line NNN: function cb\_somename never defined?](#7)
+
+<a name="busybox_awk"></a>
+**Busybox awk**
+
+* [How run run JSON.awk with busybox awk](#8)
 
 [top](#0)
 
@@ -83,7 +89,7 @@ and restarts from zero all ouput array indices.  If your application needs to
 parse all data files as a single JSON object, you have two options:
 * Pipe all data as a single JSON object as illustrated by the last notation
   shown at the end of [QA 1](#1) section *Piping Data*.
-* Modify function `reset()` in file JSON.awk. 
+* Modify function `reset()` in file JSON.awk.
 
 [top](#0)
 
@@ -115,6 +121,7 @@ because mawk shows serious limitations on my Linux test system (mawk 1.3.4
   Solution: use gawk (recommended) or busybox awk. They both can handle large
   input files (tested with 3+ MB JSON text input).
 
+<a name="7"></a>
 ## 7. How to fix error: mawk: JSON.awk: line NNN: function cb_somename never defined?
 
 Nothing's wrong with mawk nor JSON.awk.  This error message is just an
@@ -129,3 +136,15 @@ to know why this works.
 
 [top](#0)
 
+<a name="8"></a>
+## 8. [How run run JSON.awk with busybox awk
+
+Since JSON.awk version 1.4.1 the source code must be patched in order to run
+with busybox awk. The patch is very simple: replace the literal string `\000`
+(four characters) with the literal string `\001` everywhere in file JSON.awk.
+Busybox awk does not support the NUL character. However, the JSON spec
+considers NUL a valid input character. So long as your input JSON texts do
+not include NUL characters, you will not notice a difference between the
+patched and unpatched source code.
+
+[top](#0)
