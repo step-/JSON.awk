@@ -337,15 +337,16 @@ function tokenize(a1) { #{{{1
 # - replaced regex constant for string constant, see https://github.com/step-/JSON.awk/issues/1
 # - [:cntrl:] reduced to [\000-\037], see https://github.com/step-/JSON.awk/issues/5
 # - [:space:] reduced to [ \t\n\r], see https://tools.ietf.org/html/rfc8259#page-5 ws
+# - {4} quantifier replaced with three [0-9a-fA-F] for mawk, see https://unix.stackexchange.com/a/506125
 #	BOM="(^\357\273\277)"
-#	ESCAPE="(\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})"
+#	ESCAPE="(\\[^u[:cntrl:]]|\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])"
 #	CHAR="[^[:cntrl:]\\\"]"
 #	STRING="\"" CHAR "*(" ESCAPE CHAR "*)*\""
 #	NUMBER="-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?"
 #	KEYWORD="null|false|true"
 #	SPACE="[[:space:]]+"
 #	^BOM "|" STRING "|" NUMBER "|" KEYWORD "|" SPACE "|."
-	gsub(/(^\357\273\277)|"[^"\\\000-\037]*((\\[^u\000-\037]|\\u[0-9a-fA-F]{4})[^"\\\000-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true|[ \t\n\r]+|./, "\n&", a1)
+	gsub(/(^\357\273\277)|"[^"\\\000-\037]*((\\[^u\000-\037]|\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])[^"\\\000-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true|[ \t\n\r]+|./, "\n&", a1)
 	gsub("\n" "[ \t\n\r]+", "\n", a1)
 	# ^\n BOM?
 	sub(/^\n(\357\273\277\n)?/, "", a1)
@@ -358,7 +359,7 @@ function is_value(a1) { #{{{1
 
 	# STRING | NUMBER | KEYWORD
 	if(!STRICT)
-		return a1 ~ /^("[^"\\\000-\037]*((\\[^u\000-\037]|\\u[0-9a-fA-F]{4})[^"\\\000-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true)$/
+		return a1 ~ /^("[^"\\\000-\037]*((\\[^u\000-\037]|\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])[^"\\\000-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true)$/
 
 	# STRICT is on
 	# unescaped = %x20-21 / %x23-5B / %x5D-10FFFF
@@ -381,13 +382,13 @@ function is_value(a1) { #{{{1
 		return a1 ~ /^(-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true)$/
 	}
 	# invalid STRING
-	if (a1 !~ /^("[^"\\\000-\037]*((\\[^u\000-\037]|\\u[0-9a-fA-F]{4})[^"\\\000-\037]*)*")$/) {
+	if (a1 !~ /^("[^"\\\000-\037]*((\\[^u\000-\037]|\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])[^"\\\000-\037]*)*")$/) {
 		return 0
 	}
 	a1 = substr(a1, 2, length(a1) -2)
 
 	# STRICT 1: allowed character escapes
-	gsub(/\\["\\/bfnrt]|\\u[0-9a-fA-F]{4}/, "", a1)
+	gsub(/\\["\\\/bfnrt]|\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]/, "", a1)
 	# STRICT 1: unescaped quotation-mark, reverse solidus and control characters
 	if (a1 ~ /["\\\000-\037]/) {
 		return -1
