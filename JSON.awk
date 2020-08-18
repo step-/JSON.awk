@@ -333,23 +333,26 @@ function tokenize(a1) { #{{{1
 # usage A: {for(i=1; i<=tokenize($0); i++) print TOKENS[i]}
 # see also get_token()
 
-# In POSIX character class notation but:
-# - replaced regex constant for string constant, see https://github.com/step-/JSON.awk/issues/1
-# - [:cntrl:] reduced to [\000-\037], see https://github.com/step-/JSON.awk/issues/5
-# - [:space:] reduced to [ \t\n\r], see https://tools.ietf.org/html/rfc8259#page-5 ws
-# - {4} quantifier replaced with three [0-9a-fA-F] for mawk, see https://unix.stackexchange.com/a/506125
-#	BOM="(^\357\273\277)"
-#	ESCAPE="(\\[^u[:cntrl:]]|\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])"
-#	CHAR="[^[:cntrl:]\\\"]"
-#	STRING="\"" CHAR "*(" ESCAPE CHAR "*)*\""
-#	NUMBER="-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?"
-#	KEYWORD="null|false|true"
-#	SPACE="[[:space:]]+"
-#	^BOM "|" STRING "|" NUMBER "|" KEYWORD "|" SPACE "|."
-	gsub(/(^\357\273\277)|"[^"\\\000-\037]*((\\[^u\000-\037]|\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])[^"\\\000-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true|[ \t\n\r]+|./, "\n&", a1)
+# Pattern string summary with adjustments:
+# - replace strings with regex constant; https://github.com/step-/JSON.awk/issues/1
+# - reduce [:cntrl:] to [\000-\037]; https://github.com/step-/JSON.awk/issues/5
+# - reduce [:space:] to [ \t\n\r]; https://tools.ietf.org/html/rfc8259#page-5 ws
+# - replace {4} quantifier with three [0-9a-fA-F] for mawk; https://unix.stackexchange.com/a/506125
+# - BOM encodings UTF-8, UTF16-LE and UTF-BE; https://en.wikipedia.org/wiki/Byte_order_mark#Byte_order_marks_by_encoding
+# ----------
+# 	TOKENS  = BOM "|" STRING "|" NUMBER "|" KEYWORD "|" SPACE "|."
+# 	BOM     = "^\357\273\277|^\377\376|^\376\377"
+# 	STRING  = "\"" CHAR "*(" ESCAPE CHAR "*)*\""
+# 	ESCAPE  = "(\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})"
+# 	CHAR    = "[^[:cntrl:]\\\"]"
+# 	NUMBER  = "-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?"
+# 	KEYWORD = "null|false|true"
+# 	SPACE   = "[[:space:]]+"
+
+	gsub(/^\357\273\277|^\377\376|^\376\377|"[^"\\\000-\037]*((\\[^u\000-\037]|\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])[^"\\\000-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true|[ \t\n\r]+|./, "\n&", a1)
 	gsub("\n" "[ \t\n\r]+", "\n", a1)
 	# ^\n BOM?
-	sub(/^\n(\357\273\277\n)?/, "", a1)
+	sub(/^\n((\357\273\277|\377\376|\376\377)\n)?/, "", a1)
 	ITOKENS=0 # get_token() helper
 	return NTOKENS = split(a1, TOKENS, /\n/)
 }
