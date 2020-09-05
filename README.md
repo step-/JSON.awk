@@ -3,6 +3,8 @@ JSON.awk
 
 A practical JSON parser written in awk.
 
+[https://github.com/step-/JSON.awk](https://github.com/step-/JSON.awk)
+
 Introduction
 ------------
 
