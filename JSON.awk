@@ -1,7 +1,7 @@
 #!/usr/bin/awk -f
 #
 # Software: JSON.awk - a practical JSON parser written in awk
-# Version: 1.4.1
+# Version: 1.4.2
 # Copyright (c) 2013-2020, step
 # License: MIT or Apache 2
 # Project home: https://github.com/step-/JSON.awk
@@ -338,10 +338,10 @@ function tokenize(a1) { #{{{1
 # - reduce [:cntrl:] to [\000-\037]; https://github.com/step-/JSON.awk/issues/5
 # - reduce [:space:] to [ \t\n\r]; https://tools.ietf.org/html/rfc8259#page-5 ws
 # - replace {4} quantifier with three [0-9a-fA-F] for mawk; https://unix.stackexchange.com/a/506125
-# - BOM encodings UTF-8, UTF16-LE and UTF-BE; https://en.wikipedia.org/wiki/Byte_order_mark#Byte_order_marks_by_encoding
+# - UTF-8 BOM signature; https://en.wikipedia.org/wiki/Byte_order_mark#Byte_order_marks_by_encoding
 # ----------
 # 	TOKENS  = BOM "|" STRING "|" NUMBER "|" KEYWORD "|" SPACE "|."
-# 	BOM     = "^\357\273\277|^\377\376|^\376\377"
+# 	BOM     = "^\357\273\277"  # cf. issue #17
 # 	STRING  = "\"" CHAR "*(" ESCAPE CHAR "*)*\""
 # 	ESCAPE  = "(\\[^u[:cntrl:]]|\\u[0-9a-fA-F]{4})"
 # 	CHAR    = "[^[:cntrl:]\\\"]"
@@ -349,10 +349,10 @@ function tokenize(a1) { #{{{1
 # 	KEYWORD = "null|false|true"
 # 	SPACE   = "[[:space:]]+"
 
-	gsub(/^\357\273\277|^\377\376|^\376\377|"[^"\\\000-\037]*((\\[^u\000-\037]|\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])[^"\\\000-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true|[ \t\n\r]+|./, "\n&", a1)
+	gsub(/^\357\273\277|"[^"\\\000-\037]*((\\[^u\000-\037]|\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])[^"\\\000-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true|[ \t\n\r]+|./, "\n&", a1)
 	gsub("\n" "[ \t\n\r]+", "\n", a1)
 	# ^\n BOM?
-	sub(/^\n((\357\273\277|\377\376|\376\377)\n)?/, "", a1)
+	sub(/^\n(\357\273\277\n)?/, "", a1)
 	ITOKENS=0 # get_token() helper
 	return NTOKENS = split(a1, TOKENS, /\n/)
 }
