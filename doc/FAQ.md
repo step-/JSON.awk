@@ -21,7 +21,7 @@
 <a name="busybox_awk"></a>
 **Busybox awk**
 
-* [How run run JSON.awk with busybox awk](#8)
+* [How to run JSON.awk with busybox awk](#8)
 
 [top](#0)
 
@@ -137,14 +137,15 @@ to know why this works.
 [top](#0)
 
 <a name="8"></a>
-## 8. [How run run JSON.awk with busybox awk
+## 8. [How to run JSON.awk with busybox awk
 
 Since JSON.awk version 1.4.1 the source code must be patched in order to run
-with busybox awk. The patch is very simple: replace the literal string `\000`
+under busybox awk. The patch is very simple: replace the literal string `\000`
 (four characters) with the literal string `\001` everywhere in file JSON.awk.
 Busybox awk does not support the NUL character. However, the JSON spec
 considers NUL a valid input character. So long as your input JSON texts do
 not include NUL characters, you will not notice a difference between the
-patched and unpatched source code.
+patched and unpatched source code.  To apply the patch you can run script
+`patch-for-busybox-awk.sh` in the root folder of the repository.
 
 [top](#0)

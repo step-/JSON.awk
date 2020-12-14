@@ -1,4 +1,4 @@
-# Test results comparing three JSON.awk variants and JQ
+# Test results comparing three JSON.awk 1.4.1 variants and JQ
 
 [Test methodology](http://seriot.ch/parsing_json.php)
 
