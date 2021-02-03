@@ -176,7 +176,7 @@ bash-4.4# JSON.awk -v BRIEF=0 <(echo '[1]') <(echo '[2]')
 awk -f callbacks.sh -f JSON.awk file.json ...
 ```
 
-[Read more](doc/callbacks.md).
+[Read more](./callbacks.md).
 
 ### Library
 
@@ -184,7 +184,7 @@ awk -f callbacks.sh -f JSON.awk file.json ...
 awk -f lib/<callback module>.awk -f JSON.awk -v STREAM=0 file.json ...
 ```
 
-[Read more](doc/library.md).
+[Read more](./library.md).
 
 [top](#0)
 
