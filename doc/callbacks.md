@@ -36,7 +36,7 @@ To use callbacks an application must:
 
 2. define the callback functions.
 
-File [callbacks.awk](callbacks.awk)
+File [callbacks.awk](../callbacks.awk)
 implements stubs of all required
 callback functions that your application can reuse or redefine as needed.
 
