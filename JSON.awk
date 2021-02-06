@@ -351,8 +351,8 @@ function tokenize(a1) { #{{{1
 
 	gsub(/^\357\273\277|"[^"\\\000-\037]*((\\[^u\000-\037]|\\u[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F])[^"\\\000-\037]*)*"|-?(0|[1-9][0-9]*)([.][0-9]+)?([eE][+-]?[0-9]+)?|null|false|true|[ \t\n\r]+|./, "\n&", a1)
 	gsub("\n" "[ \t\n\r]+", "\n", a1)
-	# ^\n BOM?
-	sub(/^\n(\357\273\277\n)?/, "", a1)
+	# ^\n BOM or \n$?
+	gsub(/^\n(\357\273\277\n)?|\n$/, "", a1)
 	ITOKENS=0 # get_token() helper
 	return NTOKENS = split(a1, TOKENS, /\n/)
 }
