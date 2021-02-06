@@ -137,7 +137,7 @@ to know why this works.
 [top](#0)
 
 <a name="8"></a>
-## 8. [How to run JSON.awk with busybox awk
+## 8. How to run JSON.awk with busybox awk
 
 Since JSON.awk version 1.4.1 the source code must be patched in order to run
 under busybox awk. The patch is very simple: replace the literal string `\000`
